@@ -130,10 +130,14 @@
   <ItemGroup>
     <ClCompile Include="algorithm_usage.cpp" />
     <ClCompile Include="avoidance_builder.cpp" />
+    <ClCompile Include="math_tools.cpp" />
+    <ClCompile Include="models.cpp" />
     <ClCompile Include="task.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="algorithm_usage.h" />
+    <ClInclude Include="math_tools.h" />
+    <ClInclude Include="models.h" />
     <ClInclude Include="server_communication.h" />
     <ClInclude Include="task.h" />
     <ClInclude Include="trajectory_estimation.h" />
