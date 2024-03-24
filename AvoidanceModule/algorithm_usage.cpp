@@ -2,25 +2,28 @@
 
 
 void build_traj(){
-	std::cout << "Hello World!\n";
-}
+	std::string task_filename = "./task.txt";
+	Task task = create_task(task_filename);
+	Hyperparams hyperparams{ task.scale()};
+	TrajectoryBuilder algo(task, hyperparams);
+	std::vector<ModelState> traj = algo.get_full_trajectory();
+	
+	// # sending AM log
+	// send_estimation_log(log)
+	// send_traj()
 
-void write_traj() {
-	std::vector<std::pair<double, double>> traj;
-	traj.push_back({ 0.1, 0.1 });
-	for (int i = 1; i < 10; ++i) {
-		std::pair<double, double> par = { traj[i - 1].first + 30, traj[i - 1].second + 30 };
-		traj.push_back(par);
-	}
-	//std::string filename = "./cpp_version_dlls/cpptraj.txt";
+	write_traj(traj);
+}	
+
+
+void write_traj(const std::vector<ModelState>& traj) {
 	std::string filename = "./cpptraj.txt";
-
-	std::ofstream out;          // поток для записи
-	out.open(filename);      // открываем файл для записи
+	std::ofstream out;      
+	out.open(filename);
 	if (out.is_open())
 	{
-		for (auto el : traj) {
-			out << el.first << " " << el.second << std::endl;
+		for (auto& state : traj) {
+			out << state._pos.x() << " " << state._pos.y() << std::endl;
 		}
 	}
 

@@ -5,11 +5,11 @@
 
 
 __declspec(dllexport) int main(){
-    //build_traj();
+    build_traj();
     //write_traj();
-    std::string task_filename = "./task.txt";
+    /*std::string task_filename = "./task.txt";
     Task task = create_task(task_filename);
     for (auto obst : task.obst_list()) {
         std::cout << obst.str() << std::endl;
-    }
+    }*/
 }

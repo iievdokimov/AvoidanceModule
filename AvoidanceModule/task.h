@@ -8,19 +8,20 @@
 
 class Task {
 public:
-	Task(Ship ship, Vector target, std::vector<ModelObject> obst_list)
-		: _ship{ ship }, _target{ target }, _obst_list{ obst_list } {};
+	Task(Ship ship, Vector target, std::vector<Obstacle> obst_list, double scale)
+		: _ship{ ship }, _target{ target }, _obst_list{ obst_list }, _scale{ scale } {};
 
 	Ship ship() const { return _ship; };
 	std::vector<Vector> cur_trajectory() const { return _cur_trajectory; };
-	std::vector<ModelObject> obst_list() const { return _obst_list; };
+	std::vector<Obstacle> obst_list() const { return _obst_list; };
 	Vector target() const { return _target; };
-
+	double scale() const { return _scale; };
 private:
 	Ship _ship;
 	std::vector<Vector> _cur_trajectory;
-	std::vector<ModelObject> _obst_list;
+	std::vector<Obstacle> _obst_list;
 	Vector _target;
+	double _scale;
 	//Hyperparams hyperparams;
 };
 
