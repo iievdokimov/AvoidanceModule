@@ -22,7 +22,7 @@ struct ModelState {
 
 class ModelObject {
 public:
-	ModelObject(Vector pos, Vector vel, double rad, ModelType type);
+	ModelObject(Vector pos, Vector vel, double rad, ModelType type, int id);
 
 	ModelType type() const { return _type; };
 
@@ -35,28 +35,33 @@ public:
 	void move(int steps, double step_t = 1);
 	double vx() const { return _vel.x(); };
 	double vy() const { return _vel.y(); };
+	int id() const { return _id; };
 
 	void set_vel(Vector velocity);
 
-	std::string str() const;
+	virtual std::string str() const;
 
 private:
 	ModelType _type;
 	Vector _pos;
 	Vector _vel;
 	double _rad;
+	int _id;
 	std::vector <ModelState> _traj;
+
 };
 
 
 
 class Ship: public ModelObject{
 public:
-	Ship(Vector pos, Vector vel, double rad, ModelType type, double max_speed, double radar_radius) :
-		ModelObject(pos, vel, rad, type), _max_speed{ max_speed }, _radar_rad{ radar_radius } {}
+	Ship(Vector pos, Vector vel, double rad, ModelType type, int id, double max_speed, double radar_radius) :
+		ModelObject(pos, vel, rad, type, id), _max_speed{ max_speed }, _radar_rad{ radar_radius } {}
 
 	double max_speed() const { return _max_speed; };
 	double radar_rad() const { return _radar_rad; };
+
+	std::string str() const override;
 
 private:
 	double _max_speed;
@@ -66,8 +71,8 @@ private:
 
 class Obstacle : public ModelObject {
 public:
-	Obstacle(Vector pos, Vector vel, double rad, ModelType type) :
-		ModelObject(pos, vel, rad, type) {}
+	Obstacle(Vector pos, Vector vel, double rad, ModelType type, int id) :
+		ModelObject(pos, vel, rad, type, id) {}
 
 private:
 

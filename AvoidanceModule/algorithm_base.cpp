@@ -55,8 +55,7 @@ void TrajectoryBuilder::next_step(){
 	
 	Vector best_velocity = choose_velocity();
 	ship.set_vel(best_velocity);
-	ship.move(1);
-
+	_move_all();
 
 	std::cout << ship.str() << std::endl;
 	
@@ -64,6 +63,14 @@ void TrajectoryBuilder::next_step(){
 	std::cout << ship.pos().str() << " " << final_target.str() << std::endl;
 	std::cout << _is_finished << " " << _cur_step << std::endl;
 	_cur_step++;	
+}
+
+void TrajectoryBuilder::_move_all(int steps, double step_t)
+{
+	ship.move(steps, step_t);
+	for (int i = 0; i < obst_list.size(); ++i) {
+		obst_list[i].move(steps, step_t);
+	}
 }
 
 

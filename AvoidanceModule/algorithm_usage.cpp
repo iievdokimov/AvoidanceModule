@@ -2,7 +2,7 @@
 
 
 void build_traj(){
-	std::string task_filename = "./task.txt";
+	std::string task_filename = "./cpptask.txt";
 	Task task = create_task(task_filename);
 	Hyperparams hyperparams{ task.scale()};
 	TrajectoryBuilder algo(task, hyperparams);

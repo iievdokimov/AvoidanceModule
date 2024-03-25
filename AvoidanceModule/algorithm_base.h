@@ -36,6 +36,8 @@ private:
 	
 	bool _is_finished;
 	unsigned int _cur_step;
+
+	void _move_all(int steps=1, double step_t=1.0);
 	
 	//logging
 	//FinishLog _finish_log;
