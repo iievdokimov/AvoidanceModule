@@ -4,6 +4,7 @@
 #include <math.h>
 #include <vector>
 #include <algorithm>
+#include <chrono>
 
 #include <stdexcept>
 
@@ -41,6 +42,7 @@ private:
 	bool _target_reached;
 
 	void _move_all(int steps=1, double step_t=1.0);
+	bool in_tracking_dist(const Obstacle& obst) const;
 	
 	//logging
 	//FinishLog _finish_log;
