@@ -23,7 +23,7 @@ public:
 
 	double dot(const Vector& arg) const;
 
-	std::string str();
+	std::string str() const;
 private:
 	double _x, _y;
 };

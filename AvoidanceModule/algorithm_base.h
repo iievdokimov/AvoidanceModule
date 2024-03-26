@@ -5,6 +5,8 @@
 #include <vector>
 #include <algorithm>
 
+#include <stdexcept>
+
 #include "task.h"
 #include "models.h"
 #include "config.h"
@@ -21,8 +23,8 @@ public:
 	std::vector<ModelState> fake_trajectory();
 
 	void next_step();
-	Vector choose_velocity() const;
-	Vector optimization_velocity(const std::vector<Vector> possible) const;
+	Vector choose_velocity(); //const;
+	Vector optimization_velocity(const std::vector<Vector>& possible); //const;
 
 private:
 	Vector final_target;
@@ -61,7 +63,8 @@ private:
 	// std::vector <Vector> _step_candidate_velocities;
 
 	// estimation tools
-	double velocity_estimation(Vector vel) const;
+	// non const - updating obstacles collision cones
+	double velocity_estimation(Vector vel); // const; 
 	double rating_target_heading(Vector vel) const;
 	double rating_diff_speed(double speed, double ship_max_speed) const;
 	double rating_speed(double speed, double ship_max_speed) const;

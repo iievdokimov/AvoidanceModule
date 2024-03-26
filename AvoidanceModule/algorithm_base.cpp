@@ -50,20 +50,21 @@ std::vector<ModelState> TrajectoryBuilder::fake_trajectory()
 void TrajectoryBuilder::next_step(){
 	if (_is_finished) return;
 
-	std::cout << "step: " << _cur_step << "max_steps: " << hyperparams.max_steps << std::endl;
+	//std::cout << "step: " << _cur_step << "max_steps: " << hyperparams.max_steps << std::endl;
 	
 	
 	Vector best_velocity = choose_velocity();
 	ship.set_vel(best_velocity);
 	_move_all();
 
-	std::cout << ship.str() << std::endl;
+	//std::cout << ship.str() << std::endl;
 	
 	update_step_flags();
-	std::cout << ship.pos().str() << " " << final_target.str() << std::endl;
-	std::cout << _is_finished << " " << _cur_step << std::endl;
+	//std::cout << ship.pos().str() << " " << final_target.str() << std::endl;
+	//std::cout << _is_finished << " " << _cur_step << std::endl;
 	_cur_step++;	
 }
+
 
 void TrajectoryBuilder::_move_all(int steps, double step_t)
 {
@@ -102,22 +103,26 @@ void TrajectoryBuilder::update_step_flags() {
 }
 
 
-Vector TrajectoryBuilder::choose_velocity() const {
+Vector TrajectoryBuilder::choose_velocity() //cosnt
+{
 	//if (_chek_local_traj_mode)
 	//	return Vector();
 
+	
 	auto velocities = dynamic_model.all_possible_velocities();
-	for (auto& el : velocities) {
-		std::cout << "vels: " << el.x() << " " << el.y() << std::endl;
-	}
-
+	//for (auto& el : velocities) {
+	//	std::cout << el.str() << " ";
+	//}
+	//std::cout << std::endl;
+	//std::string flag;
+	//std::cin >> flag;
 	return optimization_velocity(velocities);
 }
 
 
-Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector> velocities) const
+Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector>& velocities) //const
 {
-	std::cout << "optimization" << std::endl;
+	//std::cout << "optimization" << std::endl;
 	//brute force choose velocity
 	
 	//worst case is estimation = 1
@@ -125,7 +130,8 @@ Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector> veloci
 	Vector best_vel(0, 0);
 
 	//_step_vel_ratings.clear();
-	for (auto vel : velocities) {
+	// std::cout << "Vels num: " << velocities.size() << std::endl;
+	for (const auto& vel : velocities) {
 		double vel_est = velocity_estimation(vel);
 		// vel_ratings[vel] = vel_est
 		// print("vel, est, inside_vo", vel, vel_est, inside_vo, "\n")
@@ -133,27 +139,52 @@ Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector> veloci
 			best_estimation = vel_est;
 			best_vel = vel;
 		}
-		std::cout << vel.str() << " <> " << vel_est << std::endl;
+		//std::cout << "vel est: " << vel.str() << " <> " << vel_est << std::endl;
+		
 	}
+
+	//std::cout << "res: " << best_vel.str() << " " << best_estimation << std::endl;
+
+	//std::string flag;
+	//std::cin >> flag;
+
 	return best_vel;
 }
 
 
-double TrajectoryBuilder::velocity_estimation(Vector vel) const
+double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 {
 	double inside_vo_rating = 0;
 
 	
 	double collision_risk_rating = 0;
 	double target_heading_rating = rating_target_heading(vel);
-	for (const auto& obst : obst_list) {
+	for (auto& obst : obst_list) {
 		//std::cout << "CR for obst" << collision_risk(ship, vel, obst, hyperparams) << std::endl;
 
 		collision_risk_rating = std::max(collision_risk_rating, collision_risk(ship, vel, obst, hyperparams));
 
-		//cointing inside vo rating
+		//std::cout << "Before CC constructing for obst id=" << obst.id() << std::endl;
 
+		//counting inside vo rating
+		if (inside_vo_rating == 0) {
+			// update_CC may be relocated inside obst_move (use const Ship& in Obst constructor then)
+			obst.update_collision_cone(ship, hyperparams.safe_dist); //ruins velocity_estimation const cvalifier
+			//std::cout << "CC updated" << std::endl;
+			inside_vo_rating = obst.velocity_inside_vo(ship.pos(), vel);
+		}
+		//std::string flag;
+		//std::cin >> flag;
+
+		//std::cout << "VO: ";
+		//for (auto el : obst.collision_cone())
+		//	std::cout << el.str() << " ";
+		//std::cout << std::endl;
+		// std::cout << "Inside VO: " << inside_vo_rating  << " " << obst.str() << " " << vel.str() << std::endl;
 	}
+
+	//std::cout << "Inside VO: " << inside_vo_rating  << " " << vel.str() << std::endl;
+
 	Vector cur_vel = ship.vel();
 	double diff_speed = abs(vel.magnitude() - cur_vel.magnitude());
 	double diff_speed_rating = rating_diff_speed(diff_speed, ship.max_speed());
@@ -169,10 +200,10 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) const
 	}
 	const std::vector<double>& weights = hyperparams.opt_vel_weights;
 
-	std::cout << "CR: " << collision_risk_rating << " " << vel.str() << std::endl;
+	//std::cout << "CR: " << collision_risk_rating << " " << vel.str() << std::endl;
 
-	double flag;
-	std::cin >> flag;
+	//double flag;
+	//std::cin >> flag;
 
 	return (inside_vo_rating * weights[0] + collision_risk_rating * weights[1] + target_heading_rating * weights[2]
 		+ diff_speed_rating * weights[3] + speed_rating * weights[4]); // + diff_heading_rating * weights[5]
@@ -183,9 +214,9 @@ double TrajectoryBuilder::rating_target_heading(Vector vel) const
 	Vector vec_to_target = final_target.sub(ship.pos());
 	double target_angle = deg_unsigned_angle(vec_to_target, vel);
 	if (target_angle <= 30)
-		return target_angle * target_angle / 900 * 1 / 6;
+		return target_angle * target_angle / 900.0 / 6.0;
 	else
-		return 1 / 6 + (target_angle - 30) / 180;
+		return (double)1.0 / 6.0 + (target_angle - 30.0) / 180.0;
 
 }
 

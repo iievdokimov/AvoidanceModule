@@ -46,10 +46,12 @@ double collision_risk(const Ship& ship, Vector velocity, const Obstacle& obst, c
     const std::vector<double>& factors_weights = hyperparams.risk_weights;
 
     //debug_print_cr_data();
+    /*
     std::cout << obst.str() << std::endl;
     std::cout << "factors: dcpa=" << dcpa << ", tcpa=" << tcpa << ", distance=" << distance << ", rp="  << relative_position_angle << ", speedratio=" << speed_ratio << std::endl;
     std::cout << "f_factors: f_dcpa=" << f_dcpa << ", f_tcpa=" << f_tcpa << ", f_distance=" << f_distance << ", f_rp=" << f_rp_danger << ", f_speedratio=" << f_speed_ratio << std::endl;
     std::cout << std::endl;
+    */
     //double flag;
     //std::cin >> flag;
 

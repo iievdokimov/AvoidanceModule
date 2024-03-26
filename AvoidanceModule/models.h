@@ -4,7 +4,10 @@
 #include "math_tools.h"
 #include <vector>
 #include <string>
+//#include <cmath>
 
+#include <stdexcept>
+#include <iostream>
 
 
 enum ModelType {
@@ -72,10 +75,23 @@ private:
 class Obstacle : public ModelObject {
 public:
 	Obstacle(Vector pos, Vector vel, double rad, ModelType type, int id) :
-		ModelObject(pos, vel, rad, type, id) {}
+		ModelObject(pos, vel, rad, type, id)// , _collision_cone{ std::vector<Vector>(3) } {}
+	{
+		_collision_cone = { Vector(0, 0), Vector(0, 0), Vector(0, 0) };
+	}
+
+	double velocity_inside_vo(Vector ship_pos, Vector vel);
+	void update_collision_cone(const Ship& ship, double safe_dist);
+
+	auto collision_cone() const { return _collision_cone; };
 
 private:
+	std::vector<Vector> _collision_cone;
 
+	std::pair<bool, std::vector<Vector>> build_vo(const Ship& ship, double safe_dist);
+	bool vo_intersection(Vector point);
+	void sort_collision_cone_edges();
+	void set_collision_cone(std::vector<Vector> vo_edges, Vector ship_pos);
 };
 
 

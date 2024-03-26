@@ -26,7 +26,7 @@ double Vector::dot(const Vector& arg) const
 	return _x * arg._x + _y * arg._y;
 }
 
-std::string Vector::str()
+std::string Vector::str() const
 {
 	return "Vector(" + std::to_string(_x) + ", " + std::to_string(_y) + ")";
 }
