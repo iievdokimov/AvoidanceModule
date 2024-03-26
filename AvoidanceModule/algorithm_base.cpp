@@ -14,26 +14,24 @@ TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams) :
 	_collision_happened = false;
 	_stop_happened = false;
 	_unsafe_happened = false;
+	_target_reached = false;
 }
 
 
-std::vector<ModelState> TrajectoryBuilder::get_full_trajectory()
+std::pair<std::vector<ModelState>, FinishLog> TrajectoryBuilder::get_full_trajectory()
 {
 	auto start = std::chrono::steady_clock::now();
 	while (!_is_finished && _cur_step < hyperparams.max_steps) {
 		next_step();
 	}
-	if (!_is_finished) {
-		//fix_finish(false);
-		std::cout << "unfinished" << std::endl;
-	}
+	//if (!_is_finished) { }
+
 	auto end = std::chrono::steady_clock::now();
 	auto diff = end - start;
 	double seconds = std::chrono::duration<double>(diff).count();
-	_target_reached = false;
+
 	FinishLog finish_log(_target_reached, _cur_step, seconds, _events, hyperparams);
-	std::cout << "Built time: " << seconds << " sec." << std::endl;
-	return ship.traj();
+	return { ship.traj(), finish_log };
 }
 
 
@@ -66,6 +64,7 @@ void TrajectoryBuilder::next_step(){
 	//std::cout << ship.str() << std::endl;
 	
 	update_step_flags();
+	fix_step_events();
 	//std::cout << ship.pos().str() << " " << final_target.str() << std::endl;
 	//std::cout << _is_finished << " " << _cur_step << std::endl;
 	_cur_step++;	
@@ -82,6 +81,8 @@ void TrajectoryBuilder::_move_all(int steps, double step_t)
 
 bool TrajectoryBuilder::in_tracking_dist(const Obstacle& obst) const
 {
+	//std::cout << obst_list.size() << std::endl;
+	//std::cout << obst.str() << " " << points_dist(ship.pos(), obst.pos()) - obst.rad() << " " << ship.radar_rad() << std::endl;
 	if (points_dist(ship.pos(), obst.pos()) - obst.rad() < ship.radar_rad()) {
 		return true;
 	}
@@ -106,6 +107,7 @@ void TrajectoryBuilder::update_step_flags() {
 
 		if (points_dist(ship.pos(), final_target) < hyperparams.target_reached_rad) {
 			_is_finished = true;
+			_target_reached = true;
 		}
 	}
 
@@ -114,6 +116,24 @@ void TrajectoryBuilder::update_step_flags() {
 	}
 
 	//if (hyperparams.follow_trajectory_mode) {}
+}
+
+void TrajectoryBuilder::fix_step_events()
+{
+	if (_collision_happened) {
+		_events.push_back(SimulationEvent(_cur_step, collision));
+		//std::cout << "fixing collision" << std::endl;
+	} 
+	if (_unsafe_happened) {
+		_events.push_back(SimulationEvent(_cur_step, unsafe));
+		//std::cout << "fixing usafe" << std::endl;
+	}
+	if (_stop_happened) {
+		_events.push_back(SimulationEvent(_cur_step, stop));
+		//std::cout << "fixing stop" << std::endl;
+	} 
+	
+	//if (_is_finished) 
 }
 
 
@@ -178,8 +198,11 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 		if (not in_tracking_dist(obst)) {
 			continue;
 		}
-
+		//std::cout << "Obst in tracking dist " << obst.str() << std::endl;
 		collision_risk_rating = std::max(collision_risk_rating, collision_risk(ship, vel, obst, hyperparams));
+
+		//std::string flag;
+		//std::cin >> flag;
 
 		//std::cout << "Before CC constructing for obst id=" << obst.id() << std::endl;
 

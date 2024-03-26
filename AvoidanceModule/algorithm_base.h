@@ -20,7 +20,7 @@ class TrajectoryBuilder {
 public:
 	TrajectoryBuilder(Task task, Hyperparams hyperparams);
 	
-	std::vector<ModelState> get_full_trajectory();
+	std::pair<std::vector<ModelState>, FinishLog> get_full_trajectory();
 	std::vector<ModelState> fake_trajectory();
 
 	void next_step();
@@ -59,7 +59,7 @@ private:
 	bool _unsafe_happened;
 	//_inside_vo_assumption;
 	void update_step_flags();
-
+	void fix_step_events();
 
 	// step optimization data
 	double _step_vel_est;

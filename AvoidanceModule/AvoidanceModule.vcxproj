@@ -138,6 +138,7 @@
     <ClCompile Include="models.cpp" />
     <ClCompile Include="risk_indices.cpp" />
     <ClCompile Include="task.cpp" />
+    <ClCompile Include="test_tools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="algorithm_base.h" />
@@ -150,6 +151,7 @@
     <ClInclude Include="risk_indices.h" />
     <ClInclude Include="server_communication.h" />
     <ClInclude Include="task.h" />
+    <ClInclude Include="test_tools.h" />
     <ClInclude Include="trajectory_estimation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

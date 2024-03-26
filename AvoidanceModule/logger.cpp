@@ -20,7 +20,7 @@ std::string SimulationEvent::str() const
     else if (_event == stop) {
         type = "stop";
     }
-    return "Event(step=" + std::to_string(_step) + " type=" + type + ")";
+    return "Event( step= " + std::to_string(_step) + ",  " + type + " )";
 }
 
 

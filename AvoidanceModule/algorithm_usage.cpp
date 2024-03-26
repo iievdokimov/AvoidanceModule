@@ -6,13 +6,17 @@ void build_traj(){
 	Task task = create_task(task_filename);
 	Hyperparams hyperparams{ task.scale()};
 	TrajectoryBuilder algo(task, hyperparams);
-	auto traj = algo.get_full_trajectory();
+	auto build_res = algo.get_full_trajectory();
 	
+	auto traj = build_res.first;
+
+	FinishLog log = build_res.second;
+
 	// # sending AM log
 	// send_estimation_log(log)
 	// send_traj()
 
-	std::cout << "built complete.\n log:\n" << std::endl;
+	std::cout << "built complete: " + std::to_string(log.built_time()) << "sec.\n log:\n" << log.str() << std::endl;
 
 	write_traj(traj);
 }	

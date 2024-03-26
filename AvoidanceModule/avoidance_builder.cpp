@@ -1,11 +1,12 @@
 ﻿#include <iostream>
 #include "algorithm_usage.h"
 #include "task.h"
-
+#include "test_tools.h"
 
 
 __declspec(dllexport) int main(){
-    build_traj();
+    run_stress_tests(500);
+    //build_traj();
     //write_traj();
     /*std::string task_filename = "./task.txt";
     Task task = create_task(task_filename);

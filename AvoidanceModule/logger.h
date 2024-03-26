@@ -17,15 +17,15 @@ enum EventType
 
 class SimulationEvent {
 public:
-	SimulationEvent(int step, EventType event) :
+	SimulationEvent(unsigned int step, EventType event) :
 		_step{ step }, _event{ event } {}
 
-	int step() const { return _step; };
+	unsigned int step() const { return _step; };
 	EventType event() const { return _event; };
 	std::string str() const;
 
 private:
-	int _step;
+	unsigned int _step;
 	EventType _event;
 };
 
@@ -36,14 +36,16 @@ public:
 
 	std::string str() const;
 
-	/*
+	double built_time() const { return _built_time; };
+
+	
 	bool target_reached() const { return _target_reached; };
 	bool collision_happened() const{ return _collision_happened; };
 	bool stop_happened() const{ return _stop_happened; };
 	bool unsafe_happened() const { return _unsafe_happened; };
 	unsigned int steps() const{ return _steps; };
 	const auto& events() const { return _events; };
-	*/
+	
 private:
 	void set_result();
 
