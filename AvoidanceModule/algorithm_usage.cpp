@@ -6,11 +6,13 @@ void build_traj(){
 	Task task = create_task(task_filename);
 	Hyperparams hyperparams{ task.scale()};
 	TrajectoryBuilder algo(task, hyperparams);
-	std::vector<ModelState> traj = algo.get_full_trajectory();
+	auto traj = algo.get_full_trajectory();
 	
 	// # sending AM log
 	// send_estimation_log(log)
 	// send_traj()
+
+	std::cout << "built complete.\n log:\n" << std::endl;
 
 	write_traj(traj);
 }	

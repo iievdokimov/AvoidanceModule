@@ -20,6 +20,7 @@ TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams) :
 std::vector<ModelState> TrajectoryBuilder::get_full_trajectory()
 {
 	//t_start = 
+	double built_time = 0;
 	while (!_is_finished && _cur_step < hyperparams.max_steps) {
 		next_step();
 	}
@@ -27,6 +28,9 @@ std::vector<ModelState> TrajectoryBuilder::get_full_trajectory()
 		//fix_finish(false);
 		std::cout << "unfinished" << std::endl;
 	}
+
+	_target_reached = false;
+	FinishLog finish_log(_target_reached, _cur_step, built_time, _events, hyperparams);
 	return ship.traj();
 }
 

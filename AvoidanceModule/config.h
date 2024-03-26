@@ -2,10 +2,13 @@
 #define ALG_CFG
 
 #include <vector>
+#include <string>
 
 class Hyperparams {
 public:
     Hyperparams(double scale);
+
+    std::string str() const;
 
 //private:
     //steps limit of building route(unsigned int)
@@ -25,7 +28,7 @@ public:
     // (?) maximum possible speed change [m / s] (unsigned double)
     double max_speed_change = 15;
     // fixed time value that passes each step[seconds(? )](unsigned int)
-    // dt = 1
+    double dt = 1.0;
     // min dist to target[meters](unsigned double), after reaching - building route is stopped
     double target_reached_rad = ship_radius * 20;
     // min dist to intermediate target[meters](unsigned double), after reaching - next intermediate target is chosen
@@ -36,7 +39,9 @@ public:
     double rules_application_dist = ship_radar_radius;
     // modes
     bool follow_trajectory_mode = false;
+    bool rules_application_mode = false;
 
+    // optimization weights
     const std::vector<double> opt_vel_weights{ 0.155, 0.665, 0.095, 0.02, 0.065 };
     const std::vector<double> risk_weights{ 0.4, 0.367, 0.167, 0.033, 0.033 };
 

@@ -38,12 +38,14 @@ private:
 	
 	bool _is_finished;
 	unsigned int _cur_step;
+	bool _target_reached;
 
 	void _move_all(int steps=1, double step_t=1.0);
 	
 	//logging
 	//FinishLog _finish_log;
 	Logger _logger;
+	std::vector<SimulationEvent> _events;
 
 	// modes
 	bool _chek_local_traj_mode;
