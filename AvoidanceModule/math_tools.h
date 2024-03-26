@@ -5,6 +5,8 @@
 #include <math.h>
 #include <vector>
 #include <string>
+#include <chrono>
+
 
 class Vector {
 public:

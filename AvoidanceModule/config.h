@@ -12,8 +12,14 @@ public:
     const unsigned int max_steps = 60;
     // ship radius(half - length), [meters](unsigned double)
     double ship_radius = 20;
+
     // radar view distance, [meters](unsigned double)
+    // tracking dist (in terms of algo) == radar_radius (in terms of algo modeling process)
+    // obstacles out of tracking-distance are ignored by algorithm [meters] (unsigned double)
+    // enlarging this parametr leads to productivity loss (cause of counting risk indicies for more obstacles)
+    // decreasing this paremetr leads to trajectory-quality loss
     double ship_radar_radius = 750; //#550 # 1800
+
     // minimum distance to obstacle that needs to be maintained[meters](unsigned int)
     double safe_dist = ship_radius;
     // safe time, [seconds](unsigned double)

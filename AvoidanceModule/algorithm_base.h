@@ -40,6 +40,7 @@ private:
 	unsigned int _cur_step;
 
 	void _move_all(int steps=1, double step_t=1.0);
+	bool in_tracking_dist(const Obstacle& obst) const;
 	
 	//logging
 	//FinishLog _finish_log;

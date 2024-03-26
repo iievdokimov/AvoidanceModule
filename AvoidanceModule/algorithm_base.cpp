@@ -19,7 +19,7 @@ TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams) :
 
 std::vector<ModelState> TrajectoryBuilder::get_full_trajectory()
 {
-	//t_start = 
+	auto start = std::chrono::steady_clock::now();
 	while (!_is_finished && _cur_step < hyperparams.max_steps) {
 		next_step();
 	}
@@ -27,6 +27,10 @@ std::vector<ModelState> TrajectoryBuilder::get_full_trajectory()
 		//fix_finish(false);
 		std::cout << "unfinished" << std::endl;
 	}
+	auto end = std::chrono::steady_clock::now();
+	auto diff = end - start;
+	double seconds = std::chrono::duration<double>(diff).count();
+	std::cout << "Built time: " << seconds << " sec." << std::endl;
 	return ship.traj();
 }
 
@@ -74,13 +78,21 @@ void TrajectoryBuilder::_move_all(int steps, double step_t)
 	}
 }
 
+bool TrajectoryBuilder::in_tracking_dist(const Obstacle& obst) const
+{
+	if (points_dist(ship.pos(), obst.pos()) - obst.rad() < ship.radar_rad()) {
+		return true;
+	}
+	return false;
+}
+
 
 void TrajectoryBuilder::update_step_flags() {
 	_collision_happened = false;
 	_stop_happened = false;
 	_unsafe_happened = false;
 
-	for (auto obst : obst_list) {
+	for (const auto& obst : obst_list) {
 		double d = points_dist(ship.pos(), obst.pos()) - ship.rad() - obst.rad();
 		double approximation_delta = hyperparams.safe_dist;
 		if (d <= (0 - approximation_delta)) {
@@ -161,6 +173,9 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 	double target_heading_rating = rating_target_heading(vel);
 	for (auto& obst : obst_list) {
 		//std::cout << "CR for obst" << collision_risk(ship, vel, obst, hyperparams) << std::endl;
+		if (not in_tracking_dist(obst)) {
+			continue;
+		}
 
 		collision_risk_rating = std::max(collision_risk_rating, collision_risk(ship, vel, obst, hyperparams));
 
