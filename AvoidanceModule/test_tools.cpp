@@ -9,6 +9,8 @@ void run_stress_tests(unsigned int num_tests) {
 	int all_dynamic_obst = 0;
 	double all_scale = 0;
 	
+	std::vector<int> collided_test_ids;
+
 	double max_time = 0;
 	for (int i = 1; i < num_tests + 1; ++i) {
 		std::string filename = "./tasks_cpp_version/task" + std::to_string(i) + ".txt";
@@ -34,11 +36,13 @@ void run_stress_tests(unsigned int num_tests) {
 		}
 		if (c) {
 			cnt_collided += 1;
+			collided_test_ids.push_back(i);
 		}
 		if (not r and not c) {
 			cnt_unreached += 1;
 		}
 
+	
 		all_steps += log.steps();
 		all_time += log.built_time();
 		max_time = std::max(max_time, log.built_time());
@@ -50,7 +54,11 @@ void run_stress_tests(unsigned int num_tests) {
 		std::cout << "cnt_unsafe_reached=" << std::to_string(cnt_unsafe_reached) << std::endl;
 		std::cout << "cnt_unreached(but_not_collided)=" << std::to_string(cnt_unreached) << std::endl;
 		std::cout << "steps=" << std::to_string(log.steps()) << std::endl;
-
+		
+		std::cout << "Collided tests: ";
+		for (auto el : collided_test_ids)
+			std::cout << el << " ";
+		std::cout << std::endl;
 
 		//std::string flag;
 		//std::cin >> flag;
@@ -59,6 +67,6 @@ void run_stress_tests(unsigned int num_tests) {
 
 	std::cout << "av_steps=" << std::to_string((double)all_steps/num_tests) << std::endl;
 	std::cout << "av_time=" << std::to_string((double)all_time/num_tests) << std::endl;
-
+	std::cout << "max_time=" << std::to_string(max_time) << std::endl;
 }
 
