@@ -163,6 +163,14 @@ Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector>& veloc
 	double best_estimation = 1.1;
 	Vector best_vel(0, 0);
 
+
+	// updateing once here
+	// or updating for every vel (unnecessary) 
+	for (auto& obst : obst_list) {
+		obst.update_collision_cone(ship, hyperparams.safe_dist);
+	}
+
+
 	//_step_vel_ratings.clear();
 	// std::cout << "Vels num: " << velocities.size() << std::endl;
 	for (const auto& vel : velocities) {
@@ -209,7 +217,7 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 		//counting inside vo rating
 		if (inside_vo_rating == 0) {
 			// update_CC may be relocated inside obst_move (use const Ship& in Obst constructor then)
-			obst.update_collision_cone(ship, hyperparams.safe_dist); //ruins velocity_estimation const cvalifier
+			// obst.update_collision_cone(ship, hyperparams.safe_dist); //ruins velocity_estimation const cvalifier
 			//std::cout << "CC updated" << std::endl;
 			inside_vo_rating = obst.velocity_inside_vo(ship.pos(), vel);
 		}
