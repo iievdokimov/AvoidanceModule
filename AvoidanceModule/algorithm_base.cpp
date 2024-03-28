@@ -167,6 +167,10 @@ Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector>& veloc
 	// updateing once here
 	// or updating for every vel (unnecessary) 
 	for (auto& obst : obst_list) {
+		if (not in_tracking_dist(obst)) {
+			continue;
+		}
+
 		obst.update_collision_cone(ship, hyperparams.safe_dist);
 	}
 
