@@ -83,7 +83,7 @@ public:
 	double velocity_inside_vo(Vector ship_pos, Vector vel);
 	void update_collision_cone(const Ship& ship, double safe_dist);
 
-	auto collision_cone() const { return _collision_cone; };
+	const auto& collision_cone() const { return _collision_cone; };
 
 private:
 	std::vector<Vector> _collision_cone;

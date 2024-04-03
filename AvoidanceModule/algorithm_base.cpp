@@ -2,9 +2,10 @@
 #include <iostream>
 
 
-TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams) :
+TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams, std::vector<Vector> follow_targets_list) :
 	ship{ task.ship() }, final_target{ task.target() }, obst_list{ task.obst_list() },
-	hyperparams{ hyperparams }, dynamic_model{ ship, hyperparams.max_turn_angle * 2 }
+	hyperparams{ hyperparams }, dynamic_model{ ship, hyperparams.max_turn_angle * 2 },
+	follow_targets_list{ follow_targets_list}
 {
 	_is_finished = false;
 	_cur_step = 0;
@@ -15,6 +16,9 @@ TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams) :
 	_stop_happened = false;
 	_unsafe_happened = false;
 	_target_reached = false;
+
+	_step_vel_est = {};
+	follow_target_idx = 0;
 }
 
 
@@ -35,22 +39,6 @@ std::pair<std::vector<ModelState>, FinishLog> TrajectoryBuilder::get_full_trajec
 }
 
 
-std::vector<ModelState> TrajectoryBuilder::fake_trajectory()
-{
-	std::vector<ModelState> res;
-	Vector to_target = final_target.sub(ship.pos());
-	int points_num = 12;
-	//double step_x = to_target.x() / points_num;
-	//double step_y = to_target.y() / points_num;
-	for (int i = 0; i <= points_num; ++i) {
-		double k = (double)i / points_num;
-		Vector cur = ship.pos().add(to_target.mul(k));
-		res.push_back({ cur, {0, 0} });
-	}
-	return res;
-}
-
-
 void TrajectoryBuilder::next_step(){
 	if (_is_finished) return;
 
@@ -62,7 +50,10 @@ void TrajectoryBuilder::next_step(){
 	_move_all();
 
 	//std::cout << ship.str() << std::endl;
-	
+	if (hyperparams.follow_trajectory_mode) {
+		update_follow_target();
+	}
+
 	update_step_flags();
 	fix_step_events();
 	//std::cout << ship.pos().str() << " " << final_target.str() << std::endl;
@@ -117,6 +108,42 @@ void TrajectoryBuilder::update_step_flags() {
 
 	//if (hyperparams.follow_trajectory_mode) {}
 }
+
+void TrajectoryBuilder::update_follow_target()
+{
+	if ((not hyperparams.follow_trajectory_mode )|| (follow_targets_list.size() == 0)) {
+		return;
+	}
+	if (points_dist(ship.pos(), follow_target) < hyperparams.intermediate_target_reached_rad) {
+		follow_target_idx = std::min((unsigned long long)follow_target_idx + 1, follow_targets_list.size() - 1);
+		follow_target = follow_targets_list[follow_target_idx];
+	}
+	else {
+		double min_dist = points_dist(ship.pos(), final_target);
+		int target_idx_dist = follow_target_idx;
+		for (int i = follow_target_idx; i < follow_targets_list.size() - 1; ++i) {
+			double lcl_target_dist = points_dist(ship.pos(), follow_targets_list[i]);
+			if (lcl_target_dist < min_dist) {
+				min_dist = lcl_target_dist;
+				target_idx_dist = i;
+			}
+		}
+
+		int target_idx_angle = follow_target_idx;
+		for (int i = follow_target_idx; i < follow_targets_list.size() - 1; ++i) {
+			Vector dtraj = follow_targets_list[i + 1].sub(follow_targets_list[i]);
+			Vector dist_vec = ship.pos().sub(follow_targets_list[i]);
+			double lcl_dist_traj_angle = deg_unsigned_angle(dtraj, dist_vec);
+			if (lcl_dist_traj_angle > hyperparams.max_angle_to_intermediate_target) {
+				target_idx_angle = i;
+				break;
+			}
+		}
+		follow_target_idx = std::max(target_idx_angle, target_idx_dist);
+		follow_target = follow_targets_list[follow_target_idx];
+	}
+}
+
 
 void TrajectoryBuilder::fix_step_events()
 {
@@ -175,11 +202,14 @@ Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector>& veloc
 	}
 
 
-	//_step_vel_ratings.clear();
+	_step_vel_ratings.clear();
+	//_step_vel_ratings = std::vector<std::pair<Vector, double>>();
+
 	// std::cout << "Vels num: " << velocities.size() << std::endl;
 	for (const auto& vel : velocities) {
 		double vel_est = velocity_estimation(vel);
-		// vel_ratings[vel] = vel_est
+		_step_vel_ratings.push_back({ vel, vel_est });
+
 		// print("vel, est, inside_vo", vel, vel_est, inside_vo, "\n")
 		if (vel_est < best_estimation) {
 			best_estimation = vel_est;
@@ -263,7 +293,13 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 
 double TrajectoryBuilder::rating_target_heading(Vector vel) const
 {
-	Vector vec_to_target = final_target.sub(ship.pos());
+	Vector target = final_target;
+	if (hyperparams.follow_trajectory_mode)
+	{
+		target = follow_target;
+	}
+
+	Vector vec_to_target = target.sub(ship.pos());
 	double target_angle = deg_unsigned_angle(vec_to_target, vel);
 	if (target_angle <= 30)
 		return target_angle * target_angle / 900.0 / 6.0;

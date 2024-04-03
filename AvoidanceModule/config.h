@@ -44,7 +44,7 @@ public:
     // dist in which rules must be applied [meters] (unsigned double)
     double rules_application_dist = ship_radar_radius;
     // modes
-    bool follow_trajectory_mode = false;
+    bool follow_trajectory_mode = true;
     bool rules_application_mode = false;
 
     // optimization weights

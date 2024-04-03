@@ -17,7 +17,12 @@ void run_stress_tests(unsigned int num_tests) {
 		Task task = create_task(filename);
 		std::cout << "Obst list size: " << task.obst_list().size() << std::endl;
 		Hyperparams hyperparams{ task.scale() };
-		TrajectoryBuilder builder(task, hyperparams);
+		std::vector<Vector> follow_targets_list = fake_follow_targets(task.ship().pos(), task.target(), 12);
+		TrajectoryBuilder builder(task, hyperparams, follow_targets_list);
+
+		if (i == 88) {
+			std::cout << std::endl;
+		}
 
 		auto build_res = builder.get_full_trajectory();
 		auto traj = build_res.first;

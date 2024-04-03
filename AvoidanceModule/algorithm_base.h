@@ -18,15 +18,23 @@
 
 class TrajectoryBuilder {
 public:
-	TrajectoryBuilder(Task task, Hyperparams hyperparams);
+	TrajectoryBuilder(Task task, Hyperparams hyperparams, std::vector<Vector> follow_targets_list = {});
 	
 	std::pair<std::vector<ModelState>, FinishLog> get_full_trajectory();
-	std::vector<ModelState> fake_trajectory();
 
 	void next_step();
 	Vector choose_velocity(); //const;
 	Vector optimization_velocity(const std::vector<Vector>& possible); //const;
 
+	Vector get_final_target() const { return final_target; };
+	const Ship& get_ship() const { return ship; };
+	const std::vector<Obstacle>& get_obst_list() const { return obst_list; };
+	const Hyperparams& get_hyperparams() const { return hyperparams; };
+	const std::vector<std::pair<Vector, double>>& get_vel_ratings() const { return _step_vel_ratings; };
+	const std::vector<Vector>& get_follow_targets() const { return follow_targets_list; };
+	unsigned int get_follow_target_idx() const { return follow_target_idx; };
+
+	bool in_tracking_dist(const Obstacle& obst) const;
 private:
 	Vector final_target;
 	Ship ship;
@@ -35,6 +43,10 @@ private:
 	Hyperparams hyperparams;
 	CasualDynamicModel dynamic_model;
 
+	Vector follow_target;
+	unsigned int follow_target_idx;
+	std::vector<Vector> follow_targets_list;
+
 	//double possible_speed_sector = 360;
 	
 	bool _is_finished;
@@ -42,7 +54,6 @@ private:
 	bool _target_reached;
 
 	void _move_all(int steps=1, double step_t=1.0);
-	bool in_tracking_dist(const Obstacle& obst) const;
 	
 	//logging
 	//FinishLog _finish_log;
@@ -59,6 +70,7 @@ private:
 	bool _unsafe_happened;
 	//_inside_vo_assumption;
 	void update_step_flags();
+	void update_follow_target();
 	void fix_step_events();
 
 	// step optimization data
