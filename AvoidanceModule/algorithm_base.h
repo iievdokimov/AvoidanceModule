@@ -35,6 +35,7 @@ public:
 	unsigned int get_follow_target_idx() const { return follow_target_idx; };
 
 	bool in_tracking_dist(const Obstacle& obst) const;
+	void add_obstacle(Obstacle obst) { obst_list.push_back(obst); };
 private:
 	Vector final_target;
 	Ship ship;
