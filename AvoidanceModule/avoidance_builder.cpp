@@ -5,8 +5,8 @@
 
 
 __declspec(dllexport) int main(){
-    run_stress_tests(500);
-    //build_traj();
+    //run_stress_tests(500);
+    build_traj();
     //write_traj();
     /*std::string task_filename = "./task.txt";
     Task task = create_task(task_filename);

@@ -19,6 +19,9 @@ TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams, std::ve
 
 	_step_vel_est = {};
 	follow_target_idx = 0;
+	if (hyperparams.follow_trajectory_mode && follow_targets_list.size() > 0) {
+		follow_target = follow_targets_list[follow_target_idx];
+	}
 }
 
 
@@ -201,29 +204,16 @@ Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector>& veloc
 		obst.update_collision_cone(ship, hyperparams.safe_dist);
 	}
 
-
 	_step_vel_ratings.clear();
-	//_step_vel_ratings = std::vector<std::pair<Vector, double>>();
 
-	// std::cout << "Vels num: " << velocities.size() << std::endl;
 	for (const auto& vel : velocities) {
 		double vel_est = velocity_estimation(vel);
 		_step_vel_ratings.push_back({ vel, vel_est });
-
-		// print("vel, est, inside_vo", vel, vel_est, inside_vo, "\n")
 		if (vel_est < best_estimation) {
 			best_estimation = vel_est;
 			best_vel = vel;
 		}
-		//std::cout << "vel est: " << vel.str() << " <> " << vel_est << std::endl;
-		
 	}
-
-	//std::cout << "res: " << best_vel.str() << " " << best_estimation << std::endl;
-
-	//std::string flag;
-	//std::cin >> flag;
-
 	return best_vel;
 }
 
