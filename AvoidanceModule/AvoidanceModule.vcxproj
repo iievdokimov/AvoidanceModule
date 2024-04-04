@@ -136,6 +136,7 @@
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="math_tools.cpp" />
     <ClCompile Include="models.cpp" />
+    <ClCompile Include="preprocess_task.cpp" />
     <ClCompile Include="risk_indices.cpp" />
     <ClCompile Include="task.cpp" />
     <ClCompile Include="test_tools.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="logger.h" />
     <ClInclude Include="math_tools.h" />
     <ClInclude Include="models.h" />
+    <ClInclude Include="preprocess_task.h" />
     <ClInclude Include="risk_indices.h" />
     <ClInclude Include="server_communication.h" />
     <ClInclude Include="task.h" />
