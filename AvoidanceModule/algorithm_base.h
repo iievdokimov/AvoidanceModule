@@ -35,7 +35,11 @@ public:
 	unsigned int get_follow_target_idx() const { return follow_target_idx; };
 
 	bool in_tracking_dist(const Obstacle& obst) const;
+
+	// for debug-ui usage
 	void add_obstacle(Obstacle obst) { obst_list.push_back(obst); };
+	void set_follow_targets(std::vector<Vector> trajectory);
+	void set_follow_traj_mode(bool flag) { hyperparams.follow_trajectory_mode = flag; };
 private:
 	Vector final_target;
 	Ship ship;

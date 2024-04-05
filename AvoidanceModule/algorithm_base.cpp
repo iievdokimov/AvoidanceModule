@@ -83,6 +83,17 @@ bool TrajectoryBuilder::in_tracking_dist(const Obstacle& obst) const
 	return false;
 }
 
+void TrajectoryBuilder::set_follow_targets(std::vector<Vector> trajectory)
+{
+	follow_targets_list = trajectory;
+	follow_target_idx = 0;
+	if (follow_targets_list.size() == 0) {
+		return;
+	}
+	follow_target = follow_targets_list[follow_target_idx];
+	update_follow_target();
+}
+
 
 void TrajectoryBuilder::update_step_flags() {
 	_collision_happened = false;
