@@ -139,24 +139,31 @@ void TrajectoryBuilder::update_follow_target()
 		follow_target = follow_targets_list[follow_target_idx];
 	}
 	else {
+		// consider changing by dist flag only when in reached-rad
+		// otherwise may be problems with rounding thin coastal
 		double min_dist = points_dist(ship.pos(), final_target);
 		int target_idx_dist = follow_target_idx;
 		for (int i = follow_target_idx; i < follow_targets_list.size() - 1; ++i) {
 			double lcl_target_dist = points_dist(ship.pos(), follow_targets_list[i]);
-			if (lcl_target_dist < min_dist) {
+			if (lcl_target_dist < min_dist && lcl_target_dist < hyperparams.intermediate_target_reached_rad) {
 				min_dist = lcl_target_dist;
 				target_idx_dist = i;
 			}
 		}
 
 		int target_idx_angle = follow_target_idx;
-		for (int i = follow_target_idx; i < follow_targets_list.size() - 1; ++i) {
-			Vector dtraj = follow_targets_list[i + 1].sub(follow_targets_list[i]);
-			Vector dist_vec = ship.pos().sub(follow_targets_list[i]);
-			double lcl_dist_traj_angle = deg_unsigned_angle(dtraj, dist_vec);
-			if (lcl_dist_traj_angle > hyperparams.max_angle_to_intermediate_target) {
-				target_idx_angle = i;
-				break;
+		// firstly cosider d_traj to current follow_target from previous follow_target
+		if (follow_target_idx > 0) {
+			//int start_i = std::max((unsigned int)0, follow_target_idx - 1);
+			int start_i = follow_target_idx;
+			for (int i = start_i; i < follow_targets_list.size(); ++i) {
+				Vector dtraj = follow_targets_list[i].sub(follow_targets_list[i - 1]);
+				Vector dist_vec = ship.pos().sub(follow_targets_list[i]);
+				double lcl_dist_traj_angle = deg_unsigned_angle(dtraj, dist_vec);
+				if (lcl_dist_traj_angle > hyperparams.max_angle_to_intermediate_target) {
+					target_idx_angle = i;
+					break;
+				}
 			}
 		}
 		follow_target_idx = std::max(target_idx_angle, target_idx_dist);
@@ -247,6 +254,7 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 		if (not in_tracking_dist(obst)) {
 			continue;
 		}
+
 		//std::cout << "Obst in tracking dist " << obst.str() << std::endl;
 		collision_risk_rating = std::max(collision_risk_rating, collision_risk(ship, vel, obst, hyperparams));
 

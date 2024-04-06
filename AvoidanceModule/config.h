@@ -38,13 +38,13 @@ public:
     // min dist to target[meters](unsigned double), after reaching - building route is stopped
     double target_reached_rad = ship_radius * 20;
     // min dist to intermediate target[meters](unsigned double), after reaching - next intermediate target is chosen
-    double intermediate_target_reached_rad = ship_radius * 2;
+    double intermediate_target_reached_rad = ship_radius * 3.0;
     // max angle to intermediate target pos [degrees] (unsigned double)
     double max_angle_to_intermediate_target = 120;
     // dist in which rules must be applied [meters] (unsigned double)
     double rules_application_dist = ship_radar_radius;
     // dist in which rules must be applied [meters] (unsigned double)
-    double ignore_static_obst_dist = ship_radius * 5;
+    double ignore_static_obst_dist = ship_radius * 7;
     // modes
     bool follow_trajectory_mode = true;
     bool rules_application_mode = false;

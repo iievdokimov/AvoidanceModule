@@ -3,6 +3,13 @@
 
 double collision_risk(const Ship& ship, Vector velocity, const Obstacle& obst, const Hyperparams& hyperparams)
 {
+    // model type == static_obst
+    // considering safe sailing towards obst if obst is outside ignore static obst dist
+    if (obst.vel().x() == 0 && obst.vel().y() == 0 && 
+        (points_dist(ship.pos(), obst.pos()) > hyperparams.ignore_static_obst_dist)) {
+        return 0.0;
+    }
+
     Vector vec_to_obst = obst.pos().sub(ship.pos());
     std::pair<double, double> dcpa_tcpa = calculate_dcpa_tcpa(ship, velocity, obst);
     double dcpa = dcpa_tcpa.first, tcpa = dcpa_tcpa.second;
