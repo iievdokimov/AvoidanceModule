@@ -8,7 +8,7 @@
 
 class Task {
 public:
-	Task(Ship ship, Vector target, std::vector<Obstacle> obst_list, double scale)
+	Task(Ship ship, Vector target, std::vector<Obstacle> obst_list, double scale = 1)
 		: _ship{ ship }, _target{ target }, _obst_list{ obst_list }, _scale{ scale } {};
 
 	Ship ship() const { return _ship; };
@@ -29,6 +29,7 @@ private:
 
 Task create_task(const std::string& task_filename);
 
+void write_task(const Task& task);
 
 // void execute_task(const Task& task);
 

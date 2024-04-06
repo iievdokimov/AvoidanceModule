@@ -1,7 +1,6 @@
 #include "config.h"
 
-#include <iostream>
-
+/*
 Hyperparams::Hyperparams(double scale){
     ship_radius *= scale;
     ship_radar_radius *= scale;
@@ -13,6 +12,7 @@ Hyperparams::Hyperparams(double scale){
     intermediate_target_reached_rad *= scale;
     rules_application_dist *= scale;
 }
+*/
 
 std::string Hyperparams::str() const
 {

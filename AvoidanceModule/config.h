@@ -6,7 +6,7 @@
 
 class Hyperparams {
 public:
-    Hyperparams(double scale);
+    Hyperparams() {};
 
     std::string str() const;
 
@@ -14,21 +14,21 @@ public:
     //steps limit of building route(unsigned int)
     const unsigned int max_steps = 60;
     // ship radius(half - length), [meters](unsigned double)
-    double ship_radius = 20;
+    double ship_radius = 5;
 
     // radar view distance, [meters](unsigned double)
     // tracking dist (in terms of algo) == radar_radius (in terms of algo modeling process)
     // obstacles out of tracking-distance are ignored by algorithm [meters] (unsigned double)
     // enlarging this parametr leads to productivity loss (cause of counting risk indicies for more obstacles)
     // decreasing this paremetr leads to trajectory-quality loss
-    double ship_radar_radius = 750; //#550 # 1800
+    double ship_radar_radius = 187; //750 //550 // 1800
 
     // minimum distance to obstacle that needs to be maintained[meters](unsigned int)
     double safe_dist = ship_radius;
     // safe time, [seconds](unsigned double)
     double safe_time = 6;
     // maximum possible speed [m / s](unsigned double)
-    double max_speed = 40;
+    double max_speed = 10;
     // maximum possible heading angle change [degrees](unsigned double)
     double max_turn_angle = 30;
     // (?) maximum possible speed change [m / s] (unsigned double)
@@ -38,11 +38,13 @@ public:
     // min dist to target[meters](unsigned double), after reaching - building route is stopped
     double target_reached_rad = ship_radius * 20;
     // min dist to intermediate target[meters](unsigned double), after reaching - next intermediate target is chosen
-    double intermediate_target_reached_rad = ship_radius * 12;
+    double intermediate_target_reached_rad = ship_radius * 2;
     // max angle to intermediate target pos [degrees] (unsigned double)
     double max_angle_to_intermediate_target = 120;
     // dist in which rules must be applied [meters] (unsigned double)
     double rules_application_dist = ship_radar_radius;
+    // dist in which rules must be applied [meters] (unsigned double)
+    double ignore_static_obst_dist = ship_radius * 5;
     // modes
     bool follow_trajectory_mode = true;
     bool rules_application_mode = false;

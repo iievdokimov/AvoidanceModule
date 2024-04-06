@@ -94,6 +94,12 @@ void TrajectoryBuilder::set_follow_targets(std::vector<Vector> trajectory)
 	update_follow_target();
 }
 
+void TrajectoryBuilder::set_follow_traj_mode(bool flag)
+{
+	hyperparams.follow_trajectory_mode = flag;
+	update_follow_target();
+}
+
 
 void TrajectoryBuilder::update_step_flags() {
 	_collision_happened = false;

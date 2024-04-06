@@ -10,6 +10,7 @@ Task create_task(const std::string& task_filename){
         double x, y, vx, vy, rad, radar_rad, max_speed;
         int type, id;
         task_file >> x >> y >> vx >> vy >> rad >> type >> id >> max_speed >> radar_rad;
+       
         //std::cout << "reading ship: " << x << " " << y << " " << vx << " " << vy << " " << " " << rad << " " << (ModelType)type <<
         //    " " << max_speed << " " << radar_rad << "  ended.\n";
         Ship task_ship = Ship(Vector(x, y), Vector(vx, vy), rad, (ModelType)type, id, max_speed, radar_rad);

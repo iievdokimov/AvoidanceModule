@@ -39,7 +39,7 @@ public:
 	// for debug-ui usage
 	void add_obstacle(Obstacle obst) { obst_list.push_back(obst); };
 	void set_follow_targets(std::vector<Vector> trajectory);
-	void set_follow_traj_mode(bool flag) { hyperparams.follow_trajectory_mode = flag; };
+	void set_follow_traj_mode(bool flag);
 private:
 	Vector final_target;
 	Ship ship;

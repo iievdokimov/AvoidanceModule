@@ -4,7 +4,7 @@
 void build_traj(){
 	std::string task_filename = "./cpptask.txt";
 	Task task = create_task(task_filename);
-	Hyperparams hyperparams{ task.scale()};
+	Hyperparams hyperparams;
 
 	std::vector<Vector> follow_targets_list = fake_follow_targets(task.ship().pos(), task.target(), 12);
 

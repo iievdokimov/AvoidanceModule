@@ -16,7 +16,7 @@ void run_stress_tests(unsigned int num_tests) {
 		std::string filename = "./tasks_cpp_version/task" + std::to_string(i) + ".txt";
 		Task task = create_task(filename);
 		std::cout << "Obst list size: " << task.obst_list().size() << std::endl;
-		Hyperparams hyperparams{ task.scale() };
+		Hyperparams hyperparams;
 		std::vector<Vector> follow_targets_list = fake_follow_targets(task.ship().pos(), task.target(), 12);
 		TrajectoryBuilder builder(task, hyperparams, follow_targets_list);
 
@@ -75,3 +75,72 @@ void run_stress_tests(unsigned int num_tests) {
 	std::cout << "max_time=" << std::to_string(max_time) << std::endl;
 }
 
+Task generate_empty_task(double data_radius)
+{
+	Test empty_test(data_radius);
+	return empty_test.get_empty_task();
+}
+
+Test::Test(double data_radius)
+	: data_radius{ data_radius },
+	_ship{ Ship(Vector(data_radius, data_radius), Vector(0, 0), 
+		hyperparams.ship_radius, ModelType::ship_obst, -1, hyperparams.max_speed, hyperparams.ship_radar_radius) }
+{
+	set_constraints();
+	target_ship_config();
+	make_boards();
+}
+
+
+void Test::set_constraints() 
+{
+	num_dynamic_obsts = 95;
+	num_static_obsts = 45;
+	max_static_obst_size = ship().rad() * 4;
+	max_dynamic_obst_size = ship().rad() * 6;
+	max_dynamic_obst_speed = ship().max_speed() * 3;
+	ship_margin = ship().radar_rad() / 1.5;
+	target_margin = hyperparams.target_reached_rad;
+}
+
+Task Test::get_empty_task()
+{
+	return Task(_ship, _target, _obst_list);
+}
+
+void Test::target_ship_config()
+{
+	std::uniform_real_distribution<double> unif(0, 360.0);
+	std::default_random_engine re;
+
+	double taget_angle = unif(re);
+
+	Vector delta_pos = Vector(data_radius, data_radius);
+
+	double dist_to_target = data_radius + hyperparams.target_reached_rad / 2.0;
+	_target = delta_pos.add(rotate_vector(Vector(dist_to_target, 0), taget_angle));
+
+	Vector unit_v = get_directional_vec(ship().pos(), target());
+	Vector ship_vel = Vector(unit_v.x() * ship().max_speed(), unit_v.y() * ship().max_speed());
+	_ship.set_vel(ship_vel);
+}
+
+void Test::make_boards()
+{
+	Vector center_pos = Vector(data_radius, data_radius);
+
+	double l = data_radius * acos(-1) * 2;
+	double board_obst_rad = ship().rad();
+	//double board_obst_rad = ship().rad() * 4;
+	double angle_step = 180.0 / (l / board_obst_rad);
+	double dist_to_boards = data_radius + board_obst_rad;
+
+	std::vector<Vector> upper_vectors = get_sector_vecs(0.0, 360.0, dist_to_boards, angle_step);
+	for (const auto& vec : upper_vectors) {
+		Vector obst_vec = vec.add(center_pos);
+		double	d_add = ship().rad() + board_obst_rad;
+		if (Vector(target().x() - obst_vec.x(), target().y() - obst_vec.y()).magnitude() - d_add > target_margin) {
+			_obst_list.push_back(Obstacle(obst_vec, { 0, 0 }, board_obst_rad, ModelType::static_obst, _obst_list.size()));
+		}
+	}
+}
