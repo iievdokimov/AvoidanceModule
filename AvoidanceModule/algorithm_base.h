@@ -14,6 +14,7 @@
 #include "logger.h"
 #include "dynamic_models.h"
 #include "risk_indices.h"
+#include "test_tools.h"
 
 
 class TrajectoryBuilder {

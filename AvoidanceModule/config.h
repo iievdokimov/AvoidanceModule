@@ -44,7 +44,7 @@ public:
     // dist in which rules must be applied [meters] (unsigned double)
     double rules_application_dist = ship_radar_radius;
     // dist in which rules must be applied [meters] (unsigned double)
-    double ignore_static_obst_dist = ship_radius * 7;
+    double ignore_static_obst_dist = ship_radar_radius; //ship_radius * 7;
     // modes
     bool follow_trajectory_mode = true;
     bool rules_application_mode = false;
