@@ -45,6 +45,8 @@ private:
 	Vector final_target;
 	Ship ship;
 	std::vector<Obstacle> obst_list;
+	// for debug-ui usage
+	// Task init_task;
 
 	Hyperparams hyperparams;
 	CasualDynamicModel dynamic_model;

@@ -309,7 +309,7 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 double TrajectoryBuilder::rating_target_heading(Vector vel) const
 {
 	Vector target = final_target;
-	if (hyperparams.follow_trajectory_mode)
+	if (hyperparams.follow_trajectory_mode && follow_targets_list.size() > 0)
 	{
 		target = follow_target;
 	}

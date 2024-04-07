@@ -12,7 +12,7 @@ public:
 
 //private:
     //steps limit of building route(unsigned int)
-    const unsigned int max_steps = 60;
+    const unsigned int max_steps = 200;
     // ship radius(half - length), [meters](unsigned double)
     double ship_radius = 5;
 

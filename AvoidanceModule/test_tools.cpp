@@ -102,7 +102,7 @@ void Test::set_constraints()
 {
 	coast_obst_rad = ship().rad();
 
-	num_dynamic_obsts = 0;
+	num_dynamic_obsts = 60;
 	num_static_obsts = 20;
 	num_static_round_obsts = 10;
 	num_static_curve_obsts = 10;
