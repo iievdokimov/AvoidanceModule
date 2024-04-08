@@ -72,6 +72,8 @@ private:
 
 	void make_random_task();
 
+	//void make_random_task_followtraj();
+
 	void add_round_static_obst();
 
 	void add_curve_static_obst();

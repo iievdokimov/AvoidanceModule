@@ -186,7 +186,6 @@ void TrajectoryBuilder::fix_step_events()
 		_events.push_back(SimulationEvent(_cur_step, stop));
 		//std::cout << "fixing stop" << std::endl;
 	} 
-	
 	//if (_is_finished) 
 }
 
@@ -222,6 +221,11 @@ Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector>& veloc
 	// or updating for every vel (unnecessary) 
 	for (auto& obst : obst_list) {
 		if (not in_tracking_dist(obst)) {
+			continue;
+		}
+
+		// if
+		if (hyperparams.ignore_VO_static_obsts && obst.type() == ModelType::static_obst) {
 			continue;
 		}
 
@@ -268,7 +272,14 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 			// update_CC may be relocated inside obst_move (use const Ship& in Obst constructor then)
 			// obst.update_collision_cone(ship, hyperparams.safe_dist); //ruins velocity_estimation const cvalifier
 			//std::cout << "CC updated" << std::endl;
-			inside_vo_rating = obst.velocity_inside_vo(ship.pos(), vel);
+			if (obst.type() == ModelType::static_obst) {
+				if (not hyperparams.ignore_VO_static_obsts) {
+					inside_vo_rating = obst.velocity_inside_vo(ship.pos(), vel);
+				}
+			}
+			else {
+				inside_vo_rating = obst.velocity_inside_vo(ship.pos(), vel);
+			}
 		}
 		//std::string flag;
 		//std::cin >> flag;

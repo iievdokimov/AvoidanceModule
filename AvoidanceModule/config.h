@@ -43,8 +43,9 @@ public:
     double max_angle_to_intermediate_target = 120;
     // dist in which rules must be applied [meters] (unsigned double)
     double rules_application_dist = ship_radar_radius;
-    // dist in which rules must be applied [meters] (unsigned double)
-    double ignore_static_obst_dist = ship_radar_radius; //ship_radius * 7;
+    // dist ourside of which static obstacles are ignored [meters] (unsigned double)
+    double ignore_static_obst_dist = ship_radius * 7;
+
     // modes
     bool follow_trajectory_mode = true;
     bool rules_application_mode = false;
@@ -53,6 +54,8 @@ public:
     const std::vector<double> opt_vel_weights{ 0.155, 0.665, 0.095, 0.02, 0.065 };
     const std::vector<double> risk_weights{ 0.4, 0.367, 0.167, 0.033, 0.033 };
 
+    // optimization modes
+    bool ignore_VO_static_obsts = true;
 };
 
 
