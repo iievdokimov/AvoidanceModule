@@ -13,7 +13,7 @@
 #include "preprocess_task.h"
 
 
-void run_stress_tests(unsigned int num_tests);
+void run_stress_tests(unsigned int num_tests, bool );
 
 
 Task generate_empty_task(double data_radius);
@@ -26,7 +26,7 @@ public:
 
 	Task get_empty_task();
 	Task get_random_task();
-
+	Task get_random_task_followtraj();
 
 	const Ship& ship() const { return _ship; }
 	const std::vector<Obstacle>& obst_list() const { return _obst_list; }
@@ -72,13 +72,15 @@ private:
 
 	void make_random_task();
 
-	//void make_random_task_followtraj();
+	void make_random_task_followtraj();
 
 	void add_round_static_obst();
 
 	void add_curve_static_obst();
 
 	void make_boards();
+
+	void make_obstacles();
 };
 
 

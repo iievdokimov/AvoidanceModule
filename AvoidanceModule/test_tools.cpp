@@ -1,6 +1,6 @@
 #include "test_tools.h"
 
-void run_stress_tests(unsigned int num_tests) {
+void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 	
 	int cnt_collided = 0, cnt_unreached = 0, cnt_safe_reached = 0, cnt_unsafe_reached = 0;
 	int all_steps = 0;
@@ -231,6 +231,11 @@ void Test::add_round_static_obst()
 	bool near_follow_traj = false;
 	double obst_r = unif_obst_size_rad(random_engine);
 	double traj_margin = obst_r;
+	if (points_dist(_ship.pos(), obst_pos) < traj_margin or points_dist(_target, obst_pos) < traj_margin) {
+		add_round_static_obst();
+		return;
+	}
+
 	for (const auto& pos : _follow_traj) {
 		if (points_dist(pos, obst_pos) < traj_margin) {
 			add_round_static_obst();
@@ -265,6 +270,11 @@ void Test::add_curve_static_obst()
 	double obst_w = unif_obst_size(random_engine);
 	double obst_h = obst_w / 2;
 	double traj_margin = obst_w;
+
+	if (points_dist(_ship.pos(), obst_pos) < traj_margin or points_dist(_target, obst_pos) < traj_margin) {
+		add_round_static_obst();
+		return;
+	}
 
 	for (const auto& pos : _follow_traj) {
 		if (points_dist(pos, obst_pos) < traj_margin) {
@@ -323,7 +333,16 @@ void Test::add_dynamic_obst() {
 
 
 void Test::make_random_task() {
+	make_obstacles();
+}
+
+void Test::make_random_task_followtraj() {
 	_follow_traj = get_random_follow_traj(_ship.pos(), _target);
+	make_obstacles();
+}
+
+void Test::make_obstacles()
+{
 	for (int i = 0; i < num_static_round_obsts; ++i) {
 		add_round_static_obst();
 	}
@@ -337,5 +356,10 @@ void Test::make_random_task() {
 
 Task Test::get_random_task() {
 	make_random_task();
+	return Task(_ship, _target, _obst_list);
+}
+
+Task Test::get_random_task_followtraj() {
+	make_random_task_followtraj();
 	return Task(_ship, _target, _obst_list);
 }
