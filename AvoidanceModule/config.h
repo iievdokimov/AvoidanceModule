@@ -44,10 +44,10 @@ public:
     // dist in which rules must be applied [meters] (unsigned double)
     double rules_application_dist = ship_radar_radius;
     // dist ourside of which static obstacles are ignored [meters] (unsigned double)
-    double ignore_static_obst_dist = ship_radius * 7;
+    double ignore_static_obst_dist = ship_radar_radius; //ship_radius * 7;
 
     // modes
-    bool follow_trajectory_mode = true;
+    bool follow_trajectory_mode = false;
     bool rules_application_mode = false;
 
     // optimization weights

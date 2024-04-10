@@ -35,3 +35,49 @@ Task create_task(const std::string& task_filename){
     }
     task_file.close();
 }
+
+void write_task(const Task& task, const std::string& task_filename)
+{
+    std::ofstream task_file;
+    task_file.open(task_filename);
+    if (task_file.is_open())
+    {   
+        // writing ship
+        task_file 
+            << task.ship().pos().x() << " " << task.ship().pos().y() << " "
+            << task.ship().vel().x() << " " << task.ship().vel().y() << " "
+            << task.ship().rad() << " " << (int)task.ship().type() << " "
+            << task.ship().id() << " " << task.ship().max_speed() << " " << task.ship().radar_rad()
+            << std::endl;
+        // writing target
+        task_file
+            << task.target().x() << " " << task.target().y() << std::endl;
+        // writing obsts
+        for (const Obstacle& obst : task.obst_list()) {
+            task_file
+                << obst.pos().x() << " " << obst.pos().y() << " "
+                << obst.vel().x() << " " << obst.vel().y() << " "
+                << obst.rad() << " " << (int)obst.type() << " "
+                << obst.id()
+                << std::endl;
+        }
+
+    }
+    else {
+        std::cout << "error opening file: " << task_filename << std::endl;
+    }
+    task_file.close();
+}
+
+void clear_directory(const fs::path& directory)
+{
+    for (const auto& entry : fs::directory_iterator(directory)) {
+        if (fs::is_directory(entry)) {
+            // recursively
+            clear_directory(entry.path());
+        }
+        else {
+            fs::remove(entry);
+        }
+    }
+}

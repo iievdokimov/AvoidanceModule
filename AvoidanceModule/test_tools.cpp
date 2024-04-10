@@ -12,17 +12,41 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 	std::vector<int> collided_test_ids;
 
 	double max_time = 0;
-	for (int i = 1; i < num_tests + 1; ++i) {
-		std::string filename = "./tasks_cpp_version/task" + std::to_string(i) + ".txt";
-		Task task = create_task(filename);
-		std::cout << "Obst list size: " << task.obst_list().size() << std::endl;
-		Hyperparams hyperparams;
-		std::vector<Vector> follow_targets_list = fake_follow_targets(task.ship().pos(), task.target(), 12);
-		TrajectoryBuilder builder(task, hyperparams, follow_targets_list);
+	Hyperparams hyperparams;
+	double data_radius = 400;
 
-		if (i == 88) {
-			std::cout << std::endl;
+	// for logging -> remove to logging
+	std::vector<std::string> stress_test_session_folders =
+	{
+		"./logger_data/stress_test_session/collided/",
+		"./logger_data/stress_test_session/unreached/",
+		"./logger_data/stress_test_session/unsafe/",
+		"./logger_data/stress_test_session/safe/",
+	};
+	//clear_directory("./logger_data/");
+	for (const auto& el : stress_test_session_folders) {
+		clear_directory(el);
+	}
+	for (int i = 1; i < num_tests + 1; ++i) {
+		Task* task;
+		std::vector<Vector> follow_targets_list;
+		if (use_saved_tests) {
+			std::string filename = "./tasks_cpp_version/task" + std::to_string(i) + ".txt";
+			task = new Task(create_task(filename));
 		}
+		else {
+			if (hyperparams.follow_trajectory_mode) {
+				Test test(data_radius);
+				task = new Task(test.get_random_task_followtraj());
+				follow_targets_list = test.follow_targets();
+			}
+			else {
+				Test test(data_radius);
+				task = new Task(test.get_random_task());
+			}
+		}
+		std::cout << "Obst list size: " << task->obst_list().size() << std::endl;
+		TrajectoryBuilder builder(*task, hyperparams, follow_targets_list);
 
 		auto build_res = builder.get_full_trajectory();
 		auto traj = build_res.first;
@@ -33,21 +57,29 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 		bool c = log.collision_happened();
 		bool u = log.unsafe_happened();
 
+		int folder_idx = 0;
 		if ((r and u) and (not c)) {
 			cnt_unsafe_reached += 1;
+			folder_idx = 2;
 		}
 		if( r and (not u and not c) ){
 			cnt_safe_reached += 1;
+			folder_idx = 3;
 		}
 		if (c) {
 			cnt_collided += 1;
 			collided_test_ids.push_back(i);
+			folder_idx = 0;
 		}
 		if (not r and not c) {
 			cnt_unreached += 1;
+			folder_idx = 1;
 		}
 
-	
+		// for logging -> remove to logging
+		std::string task_filename = stress_test_session_folders[folder_idx] + "task" + std::to_string(i) + ".txt";
+		write_task(*task, task_filename);
+
 		all_steps += log.steps();
 		all_time += log.built_time();
 		max_time = std::max(max_time, log.built_time());
@@ -60,14 +92,14 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 		std::cout << "cnt_unreached(but_not_collided)=" << std::to_string(cnt_unreached) << std::endl;
 		std::cout << "steps=" << std::to_string(log.steps()) << std::endl;
 		
-		std::cout << "Collided tests: ";
+		/*std::cout << "Collided tests: ";
 		for (auto el : collided_test_ids)
 			std::cout << el << " ";
 		std::cout << std::endl;
-
+		*/
 		//std::string flag;
 		//std::cin >> flag;
-
+		delete task;
 	}
 
 	std::cout << "av_steps=" << std::to_string((double)all_steps/num_tests) << std::endl;
@@ -102,10 +134,10 @@ void Test::set_constraints()
 {
 	coast_obst_rad = ship().rad();
 
-	num_dynamic_obsts = 60;
+	num_dynamic_obsts = 45;
 	num_static_obsts = 20;
-	num_static_round_obsts = 10;
-	num_static_curve_obsts = 10;
+	num_static_round_obsts = 0;
+	num_static_curve_obsts = 0;
 
 
 	max_static_obst_size = ship().rad() * 16;
