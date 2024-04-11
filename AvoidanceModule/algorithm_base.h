@@ -37,6 +37,13 @@ public:
 
 	bool in_tracking_dist(const Obstacle& obst) const;
 
+	// for qulity data
+	double route_length() const { return _route_length; };
+	double route_time() const { return _route_time; };
+	double min_dist_static() const { return _min_obst_dist_static; };
+	double min_dist_dynamic() const { return _min_obst_dist_dynamic; };
+	double max_CR() const { return _max_collision_risk; };
+
 	// for debug-ui usage
 	void add_obstacle(Obstacle obst) { obst_list.push_back(obst); };
 	void set_follow_targets(std::vector<Vector> trajectory);
@@ -45,7 +52,6 @@ private:
 	Vector final_target;
 	Ship ship;
 	std::vector<Obstacle> obst_list;
-	// for debug-ui usage
 	// Task init_task;
 
 	Hyperparams hyperparams;
@@ -60,6 +66,16 @@ private:
 	bool _is_finished;
 	unsigned int _cur_step;
 	bool _target_reached;
+
+	// quality data
+	double _min_obst_dist_static;
+	double _min_obst_dist_dynamic;
+	double _route_length;
+	double _route_time;
+	double _max_collision_risk;
+	double cur_collision_risk() const;
+	
+	double _data_radius;
 
 	void _move_all(int steps=1, double step_t=1.0);
 	
@@ -93,8 +109,8 @@ private:
 	double rating_diff_speed(double speed, double ship_max_speed) const;
 	double rating_speed(double speed, double ship_max_speed) const;
 
+	TaskObstsInfo get_obsts_info(double data_radius);
+
 };
-
-
 
 #endif //ALG BASE

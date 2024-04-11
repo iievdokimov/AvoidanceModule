@@ -1,15 +1,15 @@
-Passed tests [1000]
+Passed tests [10000]
 
-cnt_collided= 4
-cnt_unsafe= 159
+cnt_collided= 11
+cnt_unsafe= 618
 cnt_unreached= 0
-cnt_safe= 837
+cnt_safe= 9371
 
 av_steps= 0.000000
-av_time= 0.023271
-max_time= 0.127566
+av_time= 0.017555
+max_time= 0.131485
 
-av_dynamic_obsts= 20.000000
+av_dynamic_obsts= 10.000000
 av_static_obsts= 931.000000
 
 av_obsts_density= -1

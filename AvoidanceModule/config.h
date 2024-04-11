@@ -24,7 +24,7 @@ public:
     double ship_radar_radius = 187; //750 //550 // 1800
 
     // minimum distance to obstacle that needs to be maintained[meters](unsigned int)
-    double safe_dist = ship_radius;
+    double safe_dist = ship_radius * 2;
     // safe time, [seconds](unsigned double)
     double safe_time = 6;
     // maximum possible speed [m / s](unsigned double)

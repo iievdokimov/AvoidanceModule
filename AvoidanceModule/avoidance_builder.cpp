@@ -6,7 +6,7 @@
 
 __declspec(dllexport) int main(){
     bool use_saved_tests = false;
-    run_stress_tests(1000, use_saved_tests);
+    run_stress_tests(10, use_saved_tests);
     //build_traj();
     //write_traj();
     /*std::string task_filename = "./task.txt";

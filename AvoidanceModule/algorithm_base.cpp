@@ -17,6 +17,13 @@ TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams, std::ve
 	_unsafe_happened = false;
 	_target_reached = false;
 
+	_data_radius = ship.pos().x(); // points_dist(ship.pos(), final_target);
+	_min_obst_dist_static = points_dist(ship.pos(), final_target);
+	_min_obst_dist_dynamic = points_dist(ship.pos(), final_target);
+	_route_length = 0;
+	_route_time = 0;
+	_max_collision_risk = 0;
+
 	_step_vel_est = {};
 	follow_target_idx = 0;
 	if (hyperparams.follow_trajectory_mode && follow_targets_list.size() > 0) {
@@ -37,7 +44,15 @@ std::pair<std::vector<ModelState>, FinishLog> TrajectoryBuilder::get_full_trajec
 	auto diff = end - start;
 	double seconds = std::chrono::duration<double>(diff).count();
 
-	FinishLog finish_log(_target_reached, _cur_step, seconds, _events, hyperparams);
+	RouteQualityData quality_data;
+	quality_data.max_collision_risk = _max_collision_risk;
+	quality_data.min_obst_dist_dynamic = _min_obst_dist_dynamic;
+	quality_data.min_obst_dist_static = _min_obst_dist_static;
+	quality_data.route_length = _route_length;
+	quality_data.route_time = _route_time;
+	
+	TaskObstsInfo obsts_info = get_obsts_info(_data_radius);
+	FinishLog finish_log(_target_reached, _cur_step, seconds, _events, quality_data, obsts_info, hyperparams);
 	return { ship.traj(), finish_log };
 }
 
@@ -49,9 +64,15 @@ void TrajectoryBuilder::next_step(){
 	
 	
 	Vector best_velocity = choose_velocity();
+	Vector prev_ship_pos = ship.pos();
 	ship.set_vel(best_velocity);
-	_move_all();
+	// estimate cr before moving
+	_max_collision_risk = cur_collision_risk();
+	_move_all(hyperparams.dt);
 
+	_route_length += ship.pos().sub(prev_ship_pos).magnitude();
+	_route_time += hyperparams.dt;
+	
 	//std::cout << ship.str() << std::endl;
 	if (hyperparams.follow_trajectory_mode) {
 		update_follow_target();
@@ -108,11 +129,11 @@ void TrajectoryBuilder::update_step_flags() {
 
 	for (const auto& obst : obst_list) {
 		double d = points_dist(ship.pos(), obst.pos()) - ship.rad() - obst.rad();
-		double approximation_delta = hyperparams.safe_dist;
-		if (d <= (0 - approximation_delta)) {
+		// double approximation_delta = hyperparams.safe_dist;
+		if (d <= 0) {
 			_collision_happened = true;
 		}
-		else if (d <= (hyperparams.safe_dist - approximation_delta)) {
+		else if (d <= (hyperparams.safe_dist)) {
 			_unsafe_happened = true;
 		}
 
@@ -120,6 +141,14 @@ void TrajectoryBuilder::update_step_flags() {
 			_is_finished = true;
 			_target_reached = true;
 		}
+
+		if (obst.type() == ModelType::static_obst) {
+			_min_obst_dist_static = std::min(_min_obst_dist_static, d);
+		}
+		else if(obst.type() == ModelType::dynamic_obst) {
+			_min_obst_dist_dynamic = std::min(_min_obst_dist_dynamic, d);
+		}
+
 	}
 
 	if (ship.vel().magnitude() == 0) {
@@ -176,15 +205,12 @@ void TrajectoryBuilder::fix_step_events()
 {
 	if (_collision_happened) {
 		_events.push_back(SimulationEvent(_cur_step, collision));
-		//std::cout << "fixing collision" << std::endl;
 	} 
 	if (_unsafe_happened) {
 		_events.push_back(SimulationEvent(_cur_step, unsafe));
-		//std::cout << "fixing usafe" << std::endl;
 	}
 	if (_stop_happened) {
 		_events.push_back(SimulationEvent(_cur_step, stop));
-		//std::cout << "fixing stop" << std::endl;
 	} 
 	//if (_is_finished) 
 }
@@ -195,21 +221,14 @@ Vector TrajectoryBuilder::choose_velocity() //cosnt
 	//if (_chek_local_traj_mode)
 	//	return Vector();
 
-	
+
 	auto velocities = dynamic_model.all_possible_velocities();
-	//for (auto& el : velocities) {
-	//	std::cout << el.str() << " ";
-	//}
-	//std::cout << std::endl;
-	//std::string flag;
-	//std::cin >> flag;
 	return optimization_velocity(velocities);
 }
 
 
 Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector>& velocities) //const
 {
-	//std::cout << "optimization" << std::endl;
 	//brute force choose velocity
 	
 	//worst case is estimation = 1
@@ -254,24 +273,13 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 	double collision_risk_rating = 0;
 	double target_heading_rating = rating_target_heading(vel);
 	for (auto& obst : obst_list) {
-		//std::cout << "CR for obst" << collision_risk(ship, vel, obst, hyperparams) << std::endl;
 		if (not in_tracking_dist(obst)) {
 			continue;
 		}
-
-		//std::cout << "Obst in tracking dist " << obst.str() << std::endl;
 		collision_risk_rating = std::max(collision_risk_rating, collision_risk(ship, vel, obst, hyperparams));
 
-		//std::string flag;
-		//std::cin >> flag;
-
-		//std::cout << "Before CC constructing for obst id=" << obst.id() << std::endl;
-
-		//counting inside vo rating
+		// counting inside vo rating
 		if (inside_vo_rating == 0) {
-			// update_CC may be relocated inside obst_move (use const Ship& in Obst constructor then)
-			// obst.update_collision_cone(ship, hyperparams.safe_dist); //ruins velocity_estimation const cvalifier
-			//std::cout << "CC updated" << std::endl;
 			if (obst.type() == ModelType::static_obst) {
 				if (not hyperparams.ignore_VO_static_obsts) {
 					inside_vo_rating = obst.velocity_inside_vo(ship.pos(), vel);
@@ -281,26 +289,12 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 				inside_vo_rating = obst.velocity_inside_vo(ship.pos(), vel);
 			}
 		}
-		//std::string flag;
-		//std::cin >> flag;
-
-		//std::cout << "VO: ";
-		//for (auto el : obst.collision_cone())
-		//	std::cout << el.str() << " ";
-		//std::cout << std::endl;
-		// std::cout << "Inside VO: " << inside_vo_rating  << " " << obst.str() << " " << vel.str() << std::endl;
 	}
-
-	//std::cout << "Inside VO: " << inside_vo_rating  << " " << vel.str() << std::endl;
 
 	Vector cur_vel = ship.vel();
 	double diff_speed = abs(vel.magnitude() - cur_vel.magnitude());
 	double diff_speed_rating = rating_diff_speed(diff_speed, ship.max_speed());
 	double speed_rating = rating_speed(vel.magnitude(), ship.max_speed());
-
-	// diff_heading = math_tools.deg_unsigned_angle(velocity, cur_vel)
-	// diff_heading_rating = 0
-	// print(f"vel={velocity} result collision risk: ", collision_risk_rating)
 
 	if (collision_risk_rating < 0.3) {
 		collision_risk_rating = 0;
@@ -308,13 +302,21 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 	}
 	const std::vector<double>& weights = hyperparams.opt_vel_weights;
 
-	//std::cout << "CR: " << collision_risk_rating << " " << vel.str() << std::endl;
-
-	//double flag;
-	//std::cin >> flag;
 
 	return (inside_vo_rating * weights[0] + collision_risk_rating * weights[1] + target_heading_rating * weights[2]
 		+ diff_speed_rating * weights[3] + speed_rating * weights[4]); // + diff_heading_rating * weights[5]
+}
+
+double TrajectoryBuilder::cur_collision_risk() const
+{
+	double cr = 0;
+	for (auto& obst : obst_list) {
+		if (not in_tracking_dist(obst)) {
+			continue;
+		}
+		cr = std::max(cr, collision_risk(ship, ship.vel(), obst, hyperparams));
+	}
+	return cr;
 }
 
 double TrajectoryBuilder::rating_target_heading(Vector vel) const
@@ -348,4 +350,26 @@ double TrajectoryBuilder::rating_speed(double speed, double ship_max_speed) cons
 	// gives penalty for low speed (?)
 	double s = ship_max_speed - speed;
 	return std::min(s * s / (ship_max_speed * ship_max_speed), 1.0);
+}
+
+TaskObstsInfo TrajectoryBuilder::get_obsts_info(double data_radius)
+{
+	TaskObstsInfo res{0,0,0};
+	double nom = 0;
+	double denom = acos(-1) * std::pow(data_radius, 2);
+	int num_dynamic_obsts = 0, num_static_obsts = 0;
+	for (const auto& obst : obst_list) {
+		nom += acos(-1) * std::pow(obst.rad(), 2);
+
+		if (obst.type() == ModelType::static_obst) {
+			num_static_obsts++;
+		}
+		else if (obst.type() == ModelType::dynamic_obst) {
+			num_dynamic_obsts++;
+		}
+	}
+	res.obsts_density = nom / denom;
+	res.num_static = num_static_obsts;
+	res.num_dynamic = num_dynamic_obsts;
+	return res;
 }

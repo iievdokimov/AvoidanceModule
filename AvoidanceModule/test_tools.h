@@ -84,5 +84,4 @@ private:
 	void make_obstacles();
 };
 
-
 #endif // ALG_TEST

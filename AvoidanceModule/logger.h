@@ -36,10 +36,24 @@ private:
 	EventType _event;
 };
 
+struct RouteQualityData {
+	double min_obst_dist_static;
+	double min_obst_dist_dynamic;
+	double route_length;
+	double route_time;
+	double max_collision_risk;
+};
+
+struct TaskObstsInfo {
+	int num_dynamic;
+	int num_static;
+	double obsts_density;
+};
 
 class FinishLog {
 public:
-	FinishLog(bool target_reached, unsigned int steps, double time, std::vector<SimulationEvent> events, const Hyperparams& hyperparams);
+	FinishLog(bool target_reached, unsigned int steps, double build_time, std::vector<SimulationEvent> events, 
+		RouteQualityData quality_data, TaskObstsInfo task_obsts_info, const Hyperparams& hyperparams);
 
 	std::string str() const;
 
@@ -52,10 +66,14 @@ public:
 	bool unsafe_happened() const { return _unsafe_happened; };
 	unsigned int steps() const{ return _steps; };
 	const auto& events() const { return _events; };
-	
+	const auto& quality_data() const { return _quality_data; };
+	const auto& task_obsts_info() const { return _task_obsts_info; };
+
 private:
 	void set_result();
 
+	RouteQualityData _quality_data;
+	TaskObstsInfo _task_obsts_info;
 	const Hyperparams& _hyperparams;
 	bool _target_reached;
 	bool _collision_happened;
@@ -85,9 +103,13 @@ struct SessionResult {
 
 	double av_dynamic_obsts;
 	double av_static_obsts;
+	double av_obsts_density;
 
 	double av_min_dist_static;
 	double av_min_dist_dynamic;
+	double av_route_length;
+	double av_route_time;
+	double av_max_collision_risk;
 
 	std::string hyperparams_str;
 };
