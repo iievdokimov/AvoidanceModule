@@ -13,6 +13,8 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 	double all_route_length = 0;
 	double all_cr = 0;
 	double all_obst_density = 0;
+	double all_dynamic_obst_density = 0;
+	double all_static_obst_density = 0;
 	
 	std::vector<int> collided_test_ids;
 
@@ -97,6 +99,8 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 		all_cr += log.quality_data().max_collision_risk;
 
 		all_obst_density += log.task_obsts_info().obsts_density;
+		all_dynamic_obst_density += log.task_obsts_info().dynamic_obsts_density;
+		all_static_obst_density += log.task_obsts_info().static_obsts_density;
 
 		all_dynamic_obst += log.task_obsts_info().num_dynamic;
 		all_static_obst += log.task_obsts_info().num_static;
@@ -114,13 +118,18 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 	double av_dynamic_obsts = (double)all_dynamic_obst / num_tests;
 	double av_static_obsts = (double)all_static_obst / num_tests;
 	double av_obst_density = all_obst_density / num_tests;
-	std::cout << "av_steps=" << std::to_string((double)all_steps/num_tests) << std::endl;
-	std::cout << "av_time=" << std::to_string((double)all_time/num_tests) << std::endl;
+	double av_dynamic_obst_density = all_dynamic_obst_density / num_tests;
+	double av_static_obst_density = all_static_obst_density / num_tests;
+	std::cout << std::endl << "Session finished." << std::endl;
 	std::cout << "av_dynamic_obsts=" << std::to_string(av_dynamic_obsts) << std::endl;
 	std::cout << "av_static_obsts=" << std::to_string(av_static_obsts) << std::endl;
 	std::cout << "av_obsts_density=" << std::to_string(av_obst_density) << std::endl;
+	std::cout << "av_dynamic_obsts_density=" << std::to_string(av_dynamic_obst_density) << std::endl;
+	std::cout << "av_static_obsts_density=" << std::to_string(av_static_obst_density) << std::endl;
 	std::cout << "av_min_dist_static=" << std::to_string((double)all_min_dist_static / num_tests) << std::endl;
-	std::cout << "av_min_dist_dynamic=" << std::to_string((double)all_min_dist_dynamic / num_tests) << std::endl;
+	std::cout << "av_min_dist_dynamic=" << std::to_string((double)all_min_dist_dynamic / num_tests) << std::endl << std::endl;
+	std::cout << "av_steps=" << std::to_string((double)all_steps / num_tests) << std::endl;
+	std::cout << "av_time=" << std::to_string((double)all_time / num_tests) << std::endl;
 	std::cout << "max_time=" << std::to_string(max_time) << std::endl;
 	
 	SessionResult result;
@@ -140,6 +149,8 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 	result.av_route_time = (double)all_route_time / num_tests;
 	result.av_max_collision_risk = (double)all_cr / num_tests;
 	result.av_obsts_density = av_obst_density;
+	result.av_dynamic_obsts_density = av_dynamic_obst_density;
+	result.av_static_obsts_density = av_static_obst_density;
 	write_stress_session_result(SessionResultLog(result), session_result_folder);
 }
 

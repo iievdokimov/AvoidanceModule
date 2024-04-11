@@ -354,21 +354,26 @@ double TrajectoryBuilder::rating_speed(double speed, double ship_max_speed) cons
 
 TaskObstsInfo TrajectoryBuilder::get_obsts_info(double data_radius)
 {
+	//bool flag_cnt_limit_coastline_density = false;
 	TaskObstsInfo res{0,0,0};
-	double nom = 0;
-	double denom = acos(-1) * std::pow(data_radius, 2);
+	double dynamic_nom = 0;
+	double static_nom = 0;
+	double limit_coastline_diametr = ship.rad() * 2;
+	double denom = acos(-1) * std::pow(data_radius + limit_coastline_diametr, 2);
 	int num_dynamic_obsts = 0, num_static_obsts = 0;
 	for (const auto& obst : obst_list) {
-		nom += acos(-1) * std::pow(obst.rad(), 2);
-
 		if (obst.type() == ModelType::static_obst) {
 			num_static_obsts++;
+			static_nom += acos(-1) * std::pow(obst.rad(), 2);
 		}
 		else if (obst.type() == ModelType::dynamic_obst) {
 			num_dynamic_obsts++;
+			dynamic_nom += acos(-1) * std::pow(obst.rad(), 2);
 		}
 	}
-	res.obsts_density = nom / denom;
+	res.dynamic_obsts_density = dynamic_nom / denom;
+	res.static_obsts_density = static_nom / denom;
+	res.obsts_density = (dynamic_nom + static_nom) / denom;
 	res.num_static = num_static_obsts;
 	res.num_dynamic = num_dynamic_obsts;
 	return res;

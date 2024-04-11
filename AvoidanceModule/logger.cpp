@@ -90,7 +90,9 @@ std::string FinishLog::str() const {
     res = res + "Task obsts info:\n";
     res = res + "num_dynamic_obsts = " + std::to_string(task_obsts_info().num_dynamic) + "\n";
     res = res + "num_static_obsts = " + std::to_string(task_obsts_info().num_static) + "\n";
-    res = res + "obst_density = " + std::to_string(task_obsts_info().obsts_density) + "\n\n";
+    res = res + "static_obst_density = " + std::to_string(task_obsts_info().obsts_density) + "\n";
+    res = res + "dynamic_obst_density = " + std::to_string(task_obsts_info().dynamic_obsts_density) + "\n";
+    res = res + "static_obst_density = " + std::to_string(task_obsts_info().static_obsts_density) + "\n\n";
 
     res = res + _hyperparams.str() + "\n";
     
@@ -132,6 +134,8 @@ std::string SessionResultLog::str() const
         + "av_dynamic_obsts= " + std::to_string(result.av_dynamic_obsts) + "\n"
         + "av_static_obsts= " + std::to_string(result.av_static_obsts) + "\n\n"
         + "av_obsts_density= " + std::to_string(result.av_obsts_density) + "\n\n"
+        + "av_dynamic_obsts_density= " + std::to_string(result.av_dynamic_obsts_density) + "\n"
+        + "av_static_obsts_density= " + std::to_string(result.av_static_obsts_density) + "\n\n"
         + "av_min_dist_dynamic= " + std::to_string(result.av_min_dist_dynamic) + "\n"
         + "av_min_dist_static= " + std::to_string(result.av_min_dist_static) + "\n\n"
         + "av_route_length= " + std::to_string(result.av_route_length) + "\n"

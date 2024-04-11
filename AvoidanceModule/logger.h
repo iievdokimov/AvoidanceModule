@@ -48,6 +48,8 @@ struct TaskObstsInfo {
 	int num_dynamic;
 	int num_static;
 	double obsts_density;
+	double dynamic_obsts_density;
+	double static_obsts_density;
 };
 
 class FinishLog {
@@ -104,6 +106,8 @@ struct SessionResult {
 	double av_dynamic_obsts;
 	double av_static_obsts;
 	double av_obsts_density;
+	double av_static_obsts_density;
+	double av_dynamic_obsts_density;
 
 	double av_min_dist_static;
 	double av_min_dist_dynamic;
