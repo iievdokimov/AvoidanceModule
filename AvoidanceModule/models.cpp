@@ -93,6 +93,25 @@ void Obstacle::update_collision_cone(const Ship& ship, double safe_dist)
     set_collision_cone(res_vo_built.second, ship.pos());
 }
 
+std::vector<Vector> Obstacle::get_updated_collision_cone(const Ship& ship, double safe_dist) const
+{
+    auto res_vo_built = build_vo(ship, safe_dist);
+    bool success = res_vo_built.first;
+    if (not success)
+        return {};
+    else {
+        Vector cone_top(ship.pos().x() + vx(), ship.pos().y() + vy());
+        // sorting edges
+        Vector left_edge = res_vo_built.second[0];
+        Vector right_edge = res_vo_built.second[1];
+        if (deg_clockwise_angle(left_edge, right_edge) > 180.0) {
+            res_vo_built.second[0] = right_edge;
+            res_vo_built.second[1] = left_edge;
+        }
+        return { cone_top, res_vo_built.second[0], res_vo_built.second[1] };
+    }
+}
+
 
 void Obstacle::set_collision_cone(std::vector<Vector> vo_edges, Vector ship_pos)
 {
@@ -119,7 +138,7 @@ void Obstacle::sort_collision_cone_edges()
     }
 }
 
-std::pair<bool, std::vector<Vector>> Obstacle::build_vo(const Ship& ship, double safe_dist)
+std::pair<bool, std::vector<Vector>> Obstacle::build_vo(const Ship& ship, double safe_dist) const
 {
     /*:
         param ship : object from which perspective collision cone is constructed
@@ -199,4 +218,3 @@ std::pair<bool, std::vector<Vector>> Obstacle::build_vo(const Ship& ship, double
         return { false, {} }; //{Vector(0, 0), Vector(0, 0), Vector(0, 0)}};
     }
 }
-

@@ -134,8 +134,8 @@ void Test::set_constraints()
 {
 	coast_obst_rad = ship().rad();
 
-	num_dynamic_obsts = 45;
-	num_static_obsts = 20;
+	num_dynamic_obsts = 20;
+	num_static_obsts = 0;
 	num_static_round_obsts = 0;
 	num_static_curve_obsts = 0;
 
@@ -143,7 +143,7 @@ void Test::set_constraints()
 	max_static_obst_size = ship().rad() * 16;
 	max_static_curve_obst_size =  ship().rad() * 64;
 	max_dynamic_obst_size = ship().rad() * 6;
-	max_dynamic_obst_speed = ship().max_speed() * 3;
+	max_dynamic_obst_speed = ship().max_speed() * 2;
 
 	min_static_obst_size = ship().rad();
 	min_dynamic_obst_size = ship().rad();

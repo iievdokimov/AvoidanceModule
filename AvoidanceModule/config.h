@@ -43,7 +43,7 @@ public:
     double max_angle_to_intermediate_target = 120;
     // dist in which rules must be applied [meters] (unsigned double)
     double rules_application_dist = ship_radar_radius;
-    // dist ourside of which static obstacles are ignored [meters] (unsigned double)
+    // dist outside of which static obstacles are ignored [meters] (unsigned double)
     double ignore_static_obst_dist = ship_radar_radius; //ship_radius * 7;
 
     // modes

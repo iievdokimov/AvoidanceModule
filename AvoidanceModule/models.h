@@ -85,10 +85,12 @@ public:
 
 	const auto& collision_cone() const { return _collision_cone; };
 
+	// const functions for ui-usage
+	std::vector<Vector> get_updated_collision_cone(const Ship& ship, double safe_dist) const;
 private:
 	std::vector<Vector> _collision_cone;
 
-	std::pair<bool, std::vector<Vector>> build_vo(const Ship& ship, double safe_dist);
+	std::pair<bool, std::vector<Vector>> build_vo(const Ship& ship, double safe_dist) const;
 	bool vo_intersection(Vector point);
 	void sort_collision_cone_edges();
 	void set_collision_cone(std::vector<Vector> vo_edges, Vector ship_pos);
