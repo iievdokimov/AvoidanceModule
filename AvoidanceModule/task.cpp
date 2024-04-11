@@ -68,21 +68,3 @@ void write_task(const Task& task, const std::string& task_filename)
     }
     task_file.close();
 }
-
-void clear_directory(const fs::path& directory)
-{
-    try {
-        for (const auto& entry : fs::directory_iterator(directory)) {
-            if (fs::is_directory(entry)) {
-                // recursively
-                clear_directory(entry.path());
-            }
-            else {
-                fs::remove(entry);
-            }
-        }
-    }catch (...)
-    {
-        std::cout << "Error cleaning directory" << std::endl;
-    }
-}

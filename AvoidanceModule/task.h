@@ -5,10 +5,6 @@
 #include "models.h"
 #include <fstream>
 
-#include <iostream>
-#include <filesystem>
-
-
 class Task {
 public:
 	Task(Ship ship, Vector target, std::vector<Obstacle> obst_list, double scale = 1)
@@ -33,10 +29,6 @@ private:
 Task create_task(const std::string& task_filename);
 
 void write_task(const Task& task, const std::string& task_filename);
-
-namespace fs = std::filesystem;
-// only for debug usage -> move to logger.h
-void clear_directory(const fs::path& directory);
 
 // void execute_task(const Task& task);
 

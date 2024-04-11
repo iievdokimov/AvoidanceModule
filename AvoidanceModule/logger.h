@@ -6,6 +6,13 @@
 #include "config.h"
 
 
+#include <iostream>
+#include <filesystem>
+#include <fstream>
+
+namespace fs = std::filesystem;
+
+
 enum EventType
 {
 	unsafe = 0,
@@ -60,6 +67,42 @@ private:
 };
 
 
+
+void clear_directory(const fs::path& directory);
+
+int count_files_in_directory(const fs::path& directory);
+
+struct SessionResult {
+	int passed_tests;
+	int cnt_collided;
+	int cnt_unsafe;
+	int cnt_unreached;
+	int cnt_safe;
+
+	double av_steps;
+	double av_time;
+	double max_time;
+
+	double av_dynamic_obsts;
+	double av_static_obsts;
+
+	double av_min_dist_static;
+	double av_min_dist_dynamic;
+
+	std::string hyperparams_str;
+};
+
+class SessionResultLog {
+public:
+	SessionResultLog(SessionResult res) : result{ res } {};
+	
+	std::string str() const;
+private:
+	SessionResult result;
+};
+
+
+void write_stress_session_result(const SessionResultLog& result, const fs::path& directory);
 
 class Logger {
 public:

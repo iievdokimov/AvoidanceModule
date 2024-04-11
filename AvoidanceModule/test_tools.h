@@ -11,6 +11,7 @@
 #include "config.h"
 #include "math_tools.h"
 #include "preprocess_task.h"
+#include "logger.h"
 
 
 void run_stress_tests(unsigned int num_tests, bool );

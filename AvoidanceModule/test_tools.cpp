@@ -5,8 +5,8 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 	int cnt_collided = 0, cnt_unreached = 0, cnt_safe_reached = 0, cnt_unsafe_reached = 0;
 	int all_steps = 0;
 	double all_time = 0;
-	int all_static_obst = 0;
-	int all_dynamic_obst = 0;
+	long long all_static_obst = 0;
+	long long all_dynamic_obst = 0;
 	double all_scale = 0;
 	
 	std::vector<int> collided_test_ids;
@@ -16,6 +16,7 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 	double data_radius = 400;
 
 	// for logging -> remove to logging
+	std::string session_result_folder = "./logger_data/sessions_results/";
 	std::vector<std::string> stress_test_session_folders =
 	{
 		"./logger_data/stress_test_session/collided/",
@@ -84,6 +85,17 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 		all_time += log.built_time();
 		max_time = std::max(max_time, log.built_time());
 
+		int d_obsts = 0, s_obsts = 0;
+		for (const auto& obst : task->obst_list()) {
+			if (obst.type() == ModelType::static_obst) {
+				s_obsts++;
+			}
+			else if(obst.type() == ModelType::dynamic_obst) {
+				d_obsts++;
+			}
+		}
+		all_dynamic_obst += d_obsts;
+		all_static_obst += s_obsts;
 		
 		std::cout << "cur res: passed test [" << std::to_string(i) << "/" << std::to_string(num_tests) << "]" << std::endl;
 		std::cout << "cnt_collided=" << std::to_string(cnt_collided) << std::endl;
@@ -102,9 +114,29 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 		delete task;
 	}
 
+	double av_dynamic_obsts = (double)all_dynamic_obst / num_tests;
+	double av_static_obsts = (double)all_static_obst / num_tests;
 	std::cout << "av_steps=" << std::to_string((double)all_steps/num_tests) << std::endl;
 	std::cout << "av_time=" << std::to_string((double)all_time/num_tests) << std::endl;
+	std::cout << "av_dynamic_obsts=" << std::to_string(av_dynamic_obsts) << std::endl;
+	std::cout << "av_static_obsts=" << std::to_string(av_static_obsts) << std::endl;
 	std::cout << "max_time=" << std::to_string(max_time) << std::endl;
+	
+	SessionResult result;
+	result.passed_tests = num_tests;
+	result.cnt_collided = cnt_collided;
+	result.cnt_safe = cnt_safe_reached;
+	result.cnt_unreached = cnt_unreached;
+	result.cnt_unsafe = cnt_unsafe_reached;
+	result.av_dynamic_obsts = av_dynamic_obsts;
+	result.av_static_obsts = av_static_obsts;
+	result.av_time = all_time / num_tests;
+	result.max_time = max_time;
+	result.hyperparams_str = hyperparams.str();
+	//result.av_min_dist_dynamic
+	//result.av_min_dist_static
+	//result.av_obsts_density
+	write_stress_session_result(SessionResultLog(result), session_result_folder);
 }
 
 Task generate_empty_task(double data_radius)

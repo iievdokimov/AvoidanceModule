@@ -20,6 +20,7 @@ std::string Hyperparams::str() const
     res = res + "dt = " + std::to_string(dt) + "\n";
     res = res + "max_steps = " + std::to_string(max_steps) + "\n";
     res = res + "ship_radius = " + std::to_string(ship_radius) + "\n";
+    res = res + "tracking_dist = " + std::to_string(ship_radar_radius) + "\n";
     res = res + "safe_dist = " + std::to_string(safe_dist) + "\n";
     res = res + "safe_time = " + std::to_string(safe_time) + "\n";
     res = res + "max_speed = " + std::to_string(max_speed) + "\n";
