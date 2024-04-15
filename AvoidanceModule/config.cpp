@@ -53,3 +53,27 @@ std::string Hyperparams::str() const
 
     return res;
 }
+
+Hyperparams::Hyperparams(const Hyperparams& other)
+{
+    max_steps = other.max_steps;
+    ship_radius = other.ship_radius;
+    ship_radar_radius = other.ship_radar_radius;
+    safe_dist = other.safe_dist;
+    safe_time = other.safe_time;
+    max_speed = other.max_speed;
+    max_turn_angle = other.max_turn_angle;
+    max_speed_change = other.max_speed_change;
+    dt = other.dt;
+    target_reached_rad = other.target_reached_rad;
+    intermediate_target_reached_rad = other.intermediate_target_reached_rad;
+    max_angle_to_intermediate_target = other.max_angle_to_intermediate_target;
+    rules_application_dist = other.rules_application_dist;
+    ignore_static_obst_dist = other.ignore_static_obst_dist;
+    follow_trajectory_mode = other.follow_trajectory_mode;
+    rules_application_mode = other.rules_application_mode;
+    opt_vel_weights = other.opt_vel_weights;
+    risk_weights = other.risk_weights;
+    ignore_VO_static_obsts = other.ignore_VO_static_obsts;
+    estimate_given_trajectory = other.estimate_given_trajectory;
+}

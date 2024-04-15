@@ -15,6 +15,10 @@
 #include "dynamic_models.h"
 #include "risk_indices.h"
 #include "test_tools.h"
+#include "trajectory_estimation.h"
+
+
+TrajectoryEstimator comparison_build(Task task);
 
 
 class TrajectoryBuilder {
@@ -22,6 +26,7 @@ public:
 	TrajectoryBuilder(Task task, Hyperparams hyperparams);
 	
 	std::pair<std::vector<ModelState>, FinishLog> get_full_trajectory();
+	//TrajectoryEstimator build_and_compare();
 
 	void next_step();
 	Vector choose_velocity(); //const;
@@ -37,7 +42,7 @@ public:
 
 	bool in_tracking_dist(const Obstacle& obst) const;
 
-	// for qulity data
+	// for quality data
 	double route_length() const { return _route_length; };
 	double route_time() const { return _route_time; };
 	double min_dist_static() const { return _min_obst_dist_static; };
@@ -52,7 +57,7 @@ private:
 	Vector final_target;
 	Ship ship;
 	std::vector<Obstacle> obst_list;
-	// Task init_task;
+	Task init_task;
 
 	Hyperparams hyperparams;
 	CasualDynamicModel dynamic_model;

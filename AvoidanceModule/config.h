@@ -7,12 +7,13 @@
 class Hyperparams {
 public:
     Hyperparams() {};
+    Hyperparams(const Hyperparams& other);
 
     std::string str() const;
 
 //private:
     //steps limit of building route(unsigned int)
-    const unsigned int max_steps = 200;
+    unsigned int max_steps = 200;
     // ship radius(half - length), [meters](unsigned double)
     double ship_radius = 5;
 
@@ -51,11 +52,13 @@ public:
     bool rules_application_mode = false;
 
     // optimization weights
-    const std::vector<double> opt_vel_weights{ 0.155, 0.665, 0.095, 0.02, 0.065 };
-    const std::vector<double> risk_weights{ 0.4, 0.367, 0.167, 0.033, 0.033 };
+    std::vector<double> opt_vel_weights{ 0.155, 0.665, 0.095, 0.02, 0.065 };
+    std::vector<double> risk_weights{ 0.4, 0.367, 0.167, 0.033, 0.033 };
 
     // optimization modes
     bool ignore_VO_static_obsts = true;
+
+    bool estimate_given_trajectory = false;
 };
 
 

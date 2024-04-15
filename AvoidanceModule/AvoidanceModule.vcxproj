@@ -142,6 +142,7 @@
     <ClCompile Include="risk_indices.cpp" />
     <ClCompile Include="task.cpp" />
     <ClCompile Include="test_tools.cpp" />
+    <ClCompile Include="trajectory_estimation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="algorithm_base.h" />

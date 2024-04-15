@@ -5,7 +5,7 @@
 TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams) :
 	ship{ task.ship() }, final_target{ task.target() }, obst_list{ task.obst_list() },
 	hyperparams{ hyperparams }, dynamic_model{ ship, hyperparams.max_turn_angle * 2 },
-	follow_targets_list{ follow_targets_list}
+	follow_targets_list{ follow_targets_list }, init_task{ task }
 {
 	_is_finished = false;
 	_cur_step = 0;
@@ -32,6 +32,27 @@ TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams) :
 	if (hyperparams.follow_trajectory_mode && follow_targets_list.size() > 0) {
 		follow_target = follow_targets_list[follow_target_idx];
 	}
+}
+
+TrajectoryEstimator comparison_build(Task task)
+{
+	if (task.follow_targets().size() < 2) {
+		//return TrajectoryEstimator();
+		//throw Unfilled follow targets
+		std::cout << "Comparison build error: Unfilled follow targets" << std::endl;
+	}
+	Hyperparams hyperparams_new;
+	hyperparams_new.estimate_given_trajectory = false;
+	hyperparams_new.follow_trajectory_mode = true;
+	TrajectoryBuilder builder_new(task, hyperparams_new);
+	Hyperparams hyperparams_cur;
+	hyperparams_cur.estimate_given_trajectory = true;
+	hyperparams_cur.follow_trajectory_mode = true;
+	TrajectoryBuilder estimator_cur(task, hyperparams_cur);
+	auto new_result = builder_new.get_full_trajectory();
+	auto cur_result = estimator_cur.get_full_trajectory();
+	TrajectoryEstimator result(new_result.first, new_result.second, cur_result.first, cur_result.second);
+	return result;
 }
 
 
@@ -163,7 +184,11 @@ void TrajectoryBuilder::update_step_flags() {
 
 void TrajectoryBuilder::update_follow_target()
 {
-	if ((not hyperparams.follow_trajectory_mode )|| (follow_targets_list.size() == 0)) {
+	if ((not hyperparams.follow_trajectory_mode) || (follow_targets_list.size() == 0)) {
+		return;
+	}
+	if ( hyperparams.estimate_given_trajectory ) {
+		follow_target_idx = std::min((unsigned long long)follow_target_idx + 1, follow_targets_list.size() - 1);
 		return;
 	}
 	if (points_dist(ship.pos(), follow_target) < hyperparams.intermediate_target_reached_rad) {
@@ -221,9 +246,18 @@ void TrajectoryBuilder::fix_step_events()
 
 Vector TrajectoryBuilder::choose_velocity() //cosnt
 {
-	//if (_chek_local_traj_mode)
-	//	return Vector();
-
+	if (hyperparams.estimate_given_trajectory && follow_targets_list.size() > 2) {
+		if (follow_target_idx < follow_targets_list.size() - 1) {
+			Vector next_pos = follow_targets_list[follow_target_idx];
+			Vector cur_pos = ship.pos(); //follow_targets_list[follow_target_idx];
+			Vector vel = next_pos.sub(cur_pos);
+			return vel;
+		}
+		else {
+			_is_finished = true;
+			return Vector(0, 0);
+		}
+	}
 
 	auto velocities = dynamic_model.all_possible_velocities();
 	return optimization_velocity(velocities);
@@ -381,3 +415,4 @@ TaskObstsInfo TrajectoryBuilder::get_obsts_info(double data_radius)
 	res.num_dynamic = num_dynamic_obsts;
 	return res;
 }
+

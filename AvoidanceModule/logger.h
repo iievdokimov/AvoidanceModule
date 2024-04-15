@@ -76,7 +76,7 @@ private:
 
 	RouteQualityData _quality_data;
 	TaskObstsInfo _task_obsts_info;
-	const Hyperparams& _hyperparams;
+	Hyperparams _hyperparams;
 	bool _target_reached;
 	bool _collision_happened;
 	bool _unsafe_happened;
@@ -85,7 +85,6 @@ private:
 	double _built_time;
 	std::vector<SimulationEvent> _events;
 };
-
 
 
 void clear_directory(const fs::path& directory);
