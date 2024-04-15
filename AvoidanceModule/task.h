@@ -7,21 +7,26 @@
 
 class Task {
 public:
-	Task(Ship ship, Vector target, std::vector<Obstacle> obst_list, double scale = 1)
-		: _ship{ ship }, _target{ target }, _obst_list{ obst_list }, _scale{ scale } {};
+	//Task(Ship ship, Vector target, std::vector<Obstacle> obst_list, std::vector<ModelState> cur_trajectory = {});
+	Task(Ship ship, Vector target, std::vector<Obstacle> obst_list, std::vector<Vector> follow_targets = {});
 
 	Ship ship() const { return _ship; };
-	std::vector<Vector> cur_trajectory() const { return _cur_trajectory; };
+	std::vector<ModelState> cur_trajectory() const { return _cur_trajectory; };
+	std::vector<Vector> follow_targets() const { return _follow_targets; };
 	std::vector<Obstacle> obst_list() const { return _obst_list; };
 	Vector target() const { return _target; };
-	double scale() const { return _scale; };
+	//Hyperparams hyperparams() const { return _hyperparams; };
+
 private:
 	Ship _ship;
-	std::vector<Vector> _cur_trajectory;
+	std::vector<ModelState> _cur_trajectory;
+	std::vector<Vector> _follow_targets;
 	std::vector<Obstacle> _obst_list;
 	Vector _target;
-	double _scale;
-	//Hyperparams hyperparams;
+
+	//Hyperparams _hyperparams;
+
+	void configure_follow_targets();
 };
 
 

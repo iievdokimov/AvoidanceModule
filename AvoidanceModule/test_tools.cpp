@@ -37,7 +37,6 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 	}
 	for (int i = 1; i < num_tests + 1; ++i) {
 		Task* task;
-		std::vector<Vector> follow_targets_list;
 		if (use_saved_tests) {
 			std::string filename = "./tasks_cpp_version/task" + std::to_string(i) + ".txt";
 			task = new Task(create_task(filename));
@@ -46,7 +45,6 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 			if (hyperparams.follow_trajectory_mode) {
 				Test test(data_radius);
 				task = new Task(test.get_random_task_followtraj());
-				follow_targets_list = test.follow_targets();
 			}
 			else {
 				Test test(data_radius);
@@ -54,7 +52,7 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 			}
 		}
 		std::cout << "Obst list size: " << task->obst_list().size() << std::endl;
-		TrajectoryBuilder builder(*task, hyperparams, follow_targets_list);
+		TrajectoryBuilder builder(*task, hyperparams);
 
 		auto build_res = builder.get_full_trajectory();
 		auto traj = build_res.first;
@@ -140,6 +138,7 @@ void run_stress_tests(unsigned int num_tests, bool use_saved_tests) {
 	result.cnt_unsafe = cnt_unsafe_reached;
 	result.av_dynamic_obsts = av_dynamic_obsts;
 	result.av_static_obsts = av_static_obsts;
+	result.av_steps = (double)all_steps / num_tests;
 	result.av_time = all_time / num_tests;
 	result.max_time = max_time;
 	result.hyperparams_str = hyperparams.str();
@@ -181,11 +180,10 @@ void Test::set_constraints()
 {
 	coast_obst_rad = ship().rad();
 
-	num_dynamic_obsts = 10;
-	num_static_obsts = 0;
+	num_dynamic_obsts = 45;
 	num_static_round_obsts = 0;
 	num_static_curve_obsts = 0;
-
+	num_static_obsts = num_static_round_obsts + num_static_curve_obsts;
 
 	max_static_obst_size = ship().rad() * 16;
 	max_static_curve_obst_size =  ship().rad() * 64;
@@ -315,7 +313,7 @@ void Test::add_round_static_obst()
 		return;
 	}
 
-	for (const auto& pos : _follow_traj) {
+	for (const auto& pos : _follow_targets) {
 		if (points_dist(pos, obst_pos) < traj_margin) {
 			add_round_static_obst();
 			return;
@@ -355,7 +353,7 @@ void Test::add_curve_static_obst()
 		return;
 	}
 
-	for (const auto& pos : _follow_traj) {
+	for (const auto& pos : _follow_targets) {
 		if (points_dist(pos, obst_pos) < traj_margin) {
 			add_round_static_obst();
 			return;
@@ -416,7 +414,7 @@ void Test::make_random_task() {
 }
 
 void Test::make_random_task_followtraj() {
-	_follow_traj = get_random_follow_traj(_ship.pos(), _target);
+	_follow_targets = get_random_follow_traj(_ship.pos(), _target);
 	make_obstacles();
 }
 
@@ -440,5 +438,5 @@ Task Test::get_random_task() {
 
 Task Test::get_random_task_followtraj() {
 	make_random_task_followtraj();
-	return Task(_ship, _target, _obst_list);
+	return Task(_ship, _target, _obst_list, _follow_targets);
 }

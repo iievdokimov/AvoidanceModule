@@ -8,7 +8,7 @@ void build_traj(){
 
 	std::vector<Vector> follow_targets_list = fake_follow_targets(task.ship().pos(), task.target(), 12);
 
-	TrajectoryBuilder algo(task, hyperparams, follow_targets_list);
+	TrajectoryBuilder algo(task, hyperparams);
 	auto build_res = algo.get_full_trajectory();
 	
 	auto traj = build_res.first;

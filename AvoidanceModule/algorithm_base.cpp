@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams, std::vector<Vector> follow_targets_list) :
+TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams) :
 	ship{ task.ship() }, final_target{ task.target() }, obst_list{ task.obst_list() },
 	hyperparams{ hyperparams }, dynamic_model{ ship, hyperparams.max_turn_angle * 2 },
 	follow_targets_list{ follow_targets_list}
@@ -25,6 +25,9 @@ TrajectoryBuilder::TrajectoryBuilder(Task task, Hyperparams hyperparams, std::ve
 	_max_collision_risk = 0;
 
 	_step_vel_est = {};
+	
+	//configure_follow_targets(task.cur_trajectory());
+	follow_targets_list = task.follow_targets();
 	follow_target_idx = 0;
 	if (hyperparams.follow_trajectory_mode && follow_targets_list.size() > 0) {
 		follow_target = follow_targets_list[follow_target_idx];

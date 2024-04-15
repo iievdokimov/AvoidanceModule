@@ -19,6 +19,7 @@ void run_stress_tests(unsigned int num_tests, bool );
 
 Task generate_empty_task(double data_radius);
 
+//std::vector<ModelState> get_random_follow_traj(Vector center_pos, Vector target_pos);
 std::vector<Vector> get_random_follow_traj(Vector center_pos, Vector target_pos);
 
 class Test {
@@ -31,7 +32,8 @@ public:
 
 	const Ship& ship() const { return _ship; }
 	const std::vector<Obstacle>& obst_list() const { return _obst_list; }
-	const std::vector<Vector>& follow_targets() const { return _follow_traj; }
+	//const std::vector<ModelState>& follow_trajectory() const { return _follow_traj; }
+	const std::vector<Vector>& follow_targets() const { return _follow_targets; }
 	const Vector& target() const { return _target; }
 	
 	//double get_obst_density() const;
@@ -42,7 +44,8 @@ private:
 	Ship _ship;
 	Vector _target;
 	std::vector<Obstacle> _obst_list;
-	std::vector<Vector> _follow_traj;
+	//std::vector<ModelState> _follow_traj;
+	std::vector<Vector> _follow_targets;
 	double coast_obst_rad;
 
 	Vector center;

@@ -2,9 +2,32 @@
 
 #include <iostream>
 
+/*
+Task::Task(Ship ship, Vector target, std::vector<Obstacle> obst_list, std::vector<ModelState> follow_trajectory)
+    : _ship{ ship }, _target{ target }, _obst_list{ obst_list }, _follow_trajectory{ follow_trajectory }
+{
+    configure_follow_targets();
+};
+*/
+
+Task::Task(Ship ship, Vector target, std::vector<Obstacle> obst_list, std::vector<Vector> follow_targets) 
+    : _ship{ ship }, _target{ target }, _obst_list{ obst_list }, _follow_targets{ follow_targets }
+{
+};
+
+
+void Task::configure_follow_targets()
+{
+    for (const auto& state : _cur_trajectory) {
+        // for i = 0...len_dtraj / diff_follow_targets
+        // pos = pos + state.vel * i
+        _follow_targets.push_back(state._pos);
+    }
+}
+
+
 Task create_task(const std::string& task_filename){
     std::ifstream task_file(task_filename);
-    double scale = 0.25;
     if (task_file.is_open())
     {
         double x, y, vx, vy, rad, radar_rad, max_speed;
@@ -25,7 +48,7 @@ Task create_task(const std::string& task_filename){
             task_obst_list.push_back(task_obst);
         }
 
-        Task res_task{task_ship, task_target, task_obst_list, scale };
+        Task res_task{task_ship, task_target, task_obst_list };
         task_file.close();
         return res_task;
 

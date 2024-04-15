@@ -19,7 +19,7 @@
 
 class TrajectoryBuilder {
 public:
-	TrajectoryBuilder(Task task, Hyperparams hyperparams, std::vector<Vector> follow_targets_list = {});
+	TrajectoryBuilder(Task task, Hyperparams hyperparams);
 	
 	std::pair<std::vector<ModelState>, FinishLog> get_full_trajectory();
 

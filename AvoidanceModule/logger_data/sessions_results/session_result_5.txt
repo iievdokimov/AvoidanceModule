@@ -1,0 +1,54 @@
+Passed tests [10]
+
+cnt_collided= 1
+cnt_safe= 5
+cnt_unsafe= 3
+cnt_unreached= 1
+
+av_steps= 11.225509
+av_time= 0.152593
+max_time= 0.405628
+
+av_dynamic_obsts= 45.000000
+av_static_obsts= 1536.200000
+
+av_obsts_density= 0.323583
+
+av_dynamic_obsts_density= 0.095118
+av_static_obsts_density= 0.228465
+
+av_min_dist_dynamic= 19.969773
+av_min_dist_static= 23.488624
+
+av_route_length= 539.750000
+av_route_time= 66.500000
+av_max_collision_risk= 0.171126
+
+
+USED HYPERPARAMS=
+Hyperparams(
+dt = 1.000000
+max_steps = 200
+ship_radius = 5.000000
+tracking_dist = 187.000000
+safe_dist = 10.000000
+safe_time = 6.000000
+max_speed = 10.000000
+max_turn_angle = 30.000000
+max_speed_change = 15.000000
+
+Reached rad-s:
+target_reached_rad = 100.000000
+intermediate_target_reached_rad = 15.000000
+max_angle_to_intermediate_target = 120.000000
+rules_application_dist = 187.000000
+
+Modes:
+follow_trajectory_mode = 0
+rules_application_mode = 0
+
+Weights:
+opt_vel_weights = { 0.155000, 0.665000, 0.095000, 0.020000, 0.065000, }
+risk_weights = { 0.400000, 0.367000, 0.167000, 0.033000, 0.033000, }
+
+)
