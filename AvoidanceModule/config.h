@@ -48,7 +48,7 @@ public:
     double ignore_static_obst_dist = ship_radar_radius; //ship_radius * 7;
 
     // modes
-    bool follow_trajectory_mode = true;
+    bool follow_trajectory_mode = false;
     bool rules_application_mode = false;
 
     // optimization weights

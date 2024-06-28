@@ -12,7 +12,9 @@ double collision_risk(const Ship& ship, Vector velocity, const Obstacle& obst, c
 
 std::pair<double, double> calculate_dcpa_tcpa(const Ship& ship, Vector velocity, const Obstacle& obst);
 
-double generalized_rating_func(double arg, double arg_bound, double mult);
+//double old_generalized_rating_func(double arg, double arg_bound, double mult);
+
+double f3_generalized_rating_func(double x, double x_safe, double x_track);
 
 double dcpa_index(double dcpa, double safe_dist);
 

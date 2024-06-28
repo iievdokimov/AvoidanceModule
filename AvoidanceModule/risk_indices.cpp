@@ -20,8 +20,8 @@ double collision_risk(const Ship& ship, Vector velocity, const Obstacle& obst, c
     double relative_position_angle = deg_clockwise_angle(velocity, vec_to_obst);
     double obst_speed = obst.vel().magnitude();
     double speed_ratio = 0;
-    if (obst_speed != 0)
-        speed_ratio = ship.vel().magnitude() / obst_speed;
+    if (ship.vel().magnitude() != 0)
+        speed_ratio = obst_speed / ship.vel().magnitude();
 
 
     // factors
@@ -108,7 +108,7 @@ std::pair<double, double> calculate_dcpa_tcpa(const Ship& ship, Vector vel, cons
     return { dcpa, tcpa };
 }
 
-double generalized_rating_func(double arg, double arg_bound, double mult)
+double old_generalized_rating_func(double arg, double arg_bound, double arg_bound_mult)
 {
     double shuffle = 20;
     double delta = pow(arg_bound, 2) / 2;
@@ -116,8 +116,9 @@ double generalized_rating_func(double arg, double arg_bound, double mult)
     if (arg < arg_bound) {
         return (pow((-arg + arg_bound + shuffle), 2) + delta) / max_val;
     }
-    else if (arg < mult * arg_bound) {
+    else if (arg < arg_bound_mult) {
         // ax + b = y
+        double mult = arg_bound_mult / arg_bound;
         double a = delta / (arg_bound * (1 - mult));
         double b = -a * arg_bound * mult;
         return (a * arg + b) / max_val;
@@ -127,20 +128,111 @@ double generalized_rating_func(double arg, double arg_bound, double mult)
     }
 }
 
+double f1_in_safe(double x, double x_mult) {
+    return pow(((x - x_mult) / x_mult), 2);
+}
+
+double f2_in_safe(double x, double x_mult) {
+    // ax + b = y
+    double b = 1;
+    double a = -1 / x_mult;
+    return a * x + b;
+}
+
+double f3_in_safe(double x, double x_mult) {
+    return -pow((x / x_mult), 3) + 1;
+}
+
+double f3_generalized_rating_func(double x, double x_safe, double x_track)
+{
+    // DEBUG ONLY:
+
+    //return old_generalized_rating_func(x, x_safe, x_track);
+
+
+
+
+    double y_step = 0.35;
+    double y_step_lower = 0.15;
+    if (x < x_safe) {
+        return f1_in_safe(x, x_safe) * (1 - y_step) + y_step;
+    }
+    else if (x < x_track) {
+        // ax + b = y
+        double a = y_step_lower / (x_safe - x_track);
+        double b = -a * x_track;
+        return a * x + b;
+    }
+    else {
+        return 0;
+    }
+}
+
 double dist_index(double dist, double safe_dist) 
 {
-    return generalized_rating_func(dist, 2 * safe_dist, 4);
+    return f3_generalized_rating_func(dist, 2*safe_dist, 8*safe_dist);
+}
+
+double dist_static_index(double dist, double safe_dist)
+{
+    return f3_generalized_rating_func(dist, safe_dist, 1.5*safe_dist);
 }
 
 double dcpa_index(double dcpa, double safe_dist)
 {
-    return generalized_rating_func(dcpa, 2 * safe_dist, 4);
+    return f3_generalized_rating_func(dcpa, 2*safe_dist, 8*safe_dist);
+}
+
+double dcpa_static_index(double dcpa, double safe_dist)
+{
+    return f3_generalized_rating_func(dcpa, safe_dist, 2*safe_dist);
 }
 
 double tcpa_index(double tcpa, double safe_time)
 {
-    return generalized_rating_func(tcpa, 2 * safe_time, 5);
+    return f3_generalized_rating_func(tcpa, 2*safe_time, 5*safe_time);
 }
+
+double tcpa_static_index(double tcpa, double safe_time)
+{
+    return f3_generalized_rating_func(tcpa, safe_time, 1.5*safe_time);
+}
+
+/*
+double rp_index(double angle)
+{   
+    if (angle >= 340 or angle <= 20){
+        return 1;
+    }
+    double max_value = pow(180, 2);
+    double k = pow((20 - 180), 2) / max_value;
+    return pow((angle - 180), 2) / max_value / k;
+}
+
+double rp_static_index(double angle)
+{
+    if (angle >= 345.0 or angle <= 15.0) {
+        return 1;
+    }
+
+    else if (angle >= 245.0 and angle < 315.0) {
+        return (angle - 245.0) / (double)230.0;
+    }
+    else if (angle >= 45.0 and angle < 115.0) {
+        return (115.0 - angle) / (double)230.0;
+    }
+    
+    if (angle >= 315.0) {
+        return (angle - 315.0) / 45.0 + (double)70.0 / 230.0;
+    }
+    else if (angle < 45.0) {
+        return (45.0 - angle) / 45.0 + (double)70.0 / 230.0;
+    }
+    else {
+        return 0;
+    }
+}
+*/
 
 double rp_index(double angle)
 {
@@ -151,10 +243,10 @@ double rp_index(double angle)
 double rp_static_index(double angle)
 {
     if (angle >= 245.0 and angle < 315.0) {
-        return (angle - 270.0) / (double) 180.0;
+        return (angle - 245.0) / (double)280.0;
     }
     else if (angle >= 45.0 and angle < 115.0) {
-        return (90.0 - angle) / (double) 180.0;
+        return (115.0 - angle) / (double)280.0;
     }
     else if (angle >= 315.0) {
         return (angle - 45.0 - 270.0) / 60.0 + (double)45.0 / 180.0;
@@ -164,7 +256,7 @@ double rp_static_index(double angle)
     }
     else {
         return 0;
-    }   
+    }
 }
 
 double speed_ratio_index(double K)
@@ -172,20 +264,3 @@ double speed_ratio_index(double K)
     K = std::max(K, pow(0.1, 8));
     return (double)1.0 / (1.0 + (double)1.0 / pow(K, 2));
 }
-
-double dcpa_static_index(double dcpa, double safe_dist)
-{
-    return generalized_rating_func(dcpa, safe_dist, 2.0);
-}
-
-double tcpa_static_index(double tcpa, double safe_time)
-{
-    return generalized_rating_func(tcpa, safe_time, 1.5);
-}
-
-double dist_static_index(double dist, double safe_dist)
-{
-    return generalized_rating_func(dist, safe_dist, 1.5);
-}
-
-

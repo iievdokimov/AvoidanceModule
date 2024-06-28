@@ -110,8 +110,9 @@ void TrajectoryBuilder::next_step(){
 }
 
 
-void TrajectoryBuilder::_move_all(int steps, double step_t)
+void TrajectoryBuilder::_move_all(double step_t)
 {
+	int steps = 1;
 	ship.move(steps, step_t);
 	for (int i = 0; i < obst_list.size(); ++i) {
 		obst_list[i].move(steps, step_t);
@@ -338,7 +339,6 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 		inside_vo_rating = 0;
 	}
 	const std::vector<double>& weights = hyperparams.opt_vel_weights;
-
 
 	return (inside_vo_rating * weights[0] + collision_risk_rating * weights[1] + target_heading_rating * weights[2]
 		+ diff_speed_rating * weights[3] + speed_rating * weights[4]); // + diff_heading_rating * weights[5]

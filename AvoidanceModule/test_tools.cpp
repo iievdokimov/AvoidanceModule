@@ -179,8 +179,7 @@ Test::Test(double data_radius)
 void Test::set_constraints() 
 {
 	coast_obst_rad = ship().rad();
-
-	num_dynamic_obsts = 45;
+	num_dynamic_obsts = 20;
 	num_static_round_obsts = 0;
 	num_static_curve_obsts = 0;
 	num_static_obsts = num_static_round_obsts + num_static_curve_obsts;

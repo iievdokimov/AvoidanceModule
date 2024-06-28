@@ -82,7 +82,7 @@ private:
 	
 	double _data_radius;
 
-	void _move_all(int steps=1, double step_t=1.0);
+	void _move_all(double step_t=1.0);
 	
 	//logging
 	//FinishLog _finish_log;
