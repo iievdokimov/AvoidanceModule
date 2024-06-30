@@ -37,7 +37,7 @@ std::string Ship::str() const
 		", " + std::to_string(max_speed()) + ", " + std::to_string(radar_rad()) + ")";
 }
 
-
+/*
 double Obstacle::velocity_inside_vo(Vector ship_pos, Vector vel)
 {
 	if (vo_intersection(Vector(ship_pos.x() + vel.x(), ship_pos.y() + vel.y()))) {
@@ -45,8 +45,9 @@ double Obstacle::velocity_inside_vo(Vector ship_pos, Vector vel)
 	}
 	return 0.0;
 }
+*/
 
-
+/*
 bool Obstacle::vo_intersection(Vector point)
 {
     // order is significant !
@@ -82,8 +83,9 @@ bool Obstacle::vo_intersection(Vector point)
     }
     return false;
 }
+*/
 
-
+/*
 void Obstacle::update_collision_cone(const Ship& ship, double safe_dist)
 {
     auto res_vo_built = build_vo(ship, safe_dist);
@@ -120,8 +122,9 @@ void Obstacle::set_collision_cone(std::vector<Vector> vo_edges, Vector ship_pos)
     // SORTING HERE IS UNNEEDED - only for visualization purposes
     sort_collision_cone_edges();
 }
+*/
 
-
+/*
 void Obstacle::sort_collision_cone_edges()
 {
     // vo - sector cannot be more than PI / 2
@@ -137,15 +140,16 @@ void Obstacle::sort_collision_cone_edges()
         _collision_cone[2] = left_edge;
     }
 }
+*/
 
+/*
 std::pair<bool, std::vector<Vector>> Obstacle::build_vo(const Ship& ship, double safe_dist) const
 {
-    /*:
-        param ship : object from which perspective collision cone is constructed
-        param safe_dist - additional margin to obstacle radius to stay away from obst on the distance of safe dist
-      
-        : return : True if built was successful, False if ship is inside safe_dist or unsuccessful built, edges of collision cone
-    */
+    //param ship : object from which perspective collision cone is constructed
+    //param safe_dist - additional margin to obstacle radius to stay away from obst on the distance of safe dist
+    //  
+    //: return : True if built was successful, False if ship is inside safe_dist or unsuccessful built, edges of collision cone
+
     //std::cout << "build vo" << std::endl;
     try {
         double vo_rad = ship.rad() + rad();
@@ -201,12 +205,12 @@ std::pair<bool, std::vector<Vector>> Obstacle::build_vo(const Ship& ship, double
         Vector v1(v1x, v1y);
         Vector v2(v2x, v2y);
         // delta_VO_speed = Vector(obst.vx(), obst.vy())
-        /*
-        v1.x += self.vx()
-        v1.y += self.vy()
-        v2.x += self.vx()
-        v2.y += self.vy()
-        */
+        
+        //v1.x += self.vx()
+        //v1.y += self.vy()
+        //v2.x += self.vx()
+        //v2.y += self.vy()
+    
         v1 = Vector(v1.x() + vx(), v1.y() + vy());
         v2 = Vector(v2.x() + vx(), v2.y() + vy());
 
@@ -218,3 +222,4 @@ std::pair<bool, std::vector<Vector>> Obstacle::build_vo(const Ship& ship, double
         return { false, {} }; //{Vector(0, 0), Vector(0, 0), Vector(0, 0)}};
     }
 }
+*/

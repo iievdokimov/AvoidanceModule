@@ -70,12 +70,13 @@ double collision_risk(const Ship& ship, Vector velocity, const Obstacle& obst, c
 
 std::pair<double, double> calculate_dcpa_tcpa(const Ship& ship, Vector vel, const Obstacle& obst)
 {
-    double x1 = ship.pos().x(), y1 = ship.pos().y();
-    double Vx1 = vel.x(), Vy1 = vel.y();
-    double x2 = obst.pos().x(), y2 = obst.pos().y(), Vx2 = obst.vel().x(), Vy2 = obst.vel().y();
+    double x1 = ship.pos().x(), y1 = ship.pos().y(), z1 = ship.pos().z();
+    double Vx1 = vel.x(), Vy1 = vel.y(), Vz1 = vel.z();
+    double x2 = obst.pos().x(), y2 = obst.pos().y(), z2 = obst.pos().z(),
+        Vx2 = obst.vel().x(), Vy2 = obst.vel().y(), Vz2 = obst.vel().z();
     
-    Vector R(x2 - x1, y2 - y1);
-    Vector V_rel(Vx2 - Vx1, Vy2 - Vy1);
+    Vector R(x2 - x1, y2 - y1, z2 - z1);
+    Vector V_rel(Vx2 - Vx1, Vy2 - Vy1, Vz2 - Vz1);
 
     //std::cout << "dcpa_log: R, V_rel = " << R.str() << " " << V_rel.str() << std::endl;
 
@@ -99,7 +100,7 @@ std::pair<double, double> calculate_dcpa_tcpa(const Ship& ship, Vector vel, cons
     //std::cout << "dcpa_log: relative dist, rsp-1= " << relative_dist << " " << relative_speed_projection << std::endl;
     double tcpa = relative_dist / abs(relative_speed_projection);
     //std::cout << "dcpa_log: tcpa= " << tcpa << std::endl;
-    Vector dcpa_vec(x2 - x1 + tcpa * (Vx2 - Vx1), y2 - y1 + tcpa * (Vy2 - Vy1));
+    Vector dcpa_vec(x2 - x1 + tcpa * (Vx2 - Vx1), y2 - y1 + tcpa * (Vy2 - Vy1), z2 - z1 + tcpa * (Vz2 - Vz1));
     //std::cout << "dcpa_log: dcpa_vec= " << dcpa_vec.str() << std::endl;
     double dcpa = std::max(0.0, dcpa_vec.magnitude() -
         obst.rad() - ship.rad()

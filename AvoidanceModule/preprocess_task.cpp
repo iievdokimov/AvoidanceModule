@@ -4,13 +4,13 @@ std::vector<Obstacle> preprocess_coastline(const std::vector<Vector>& coastline,
 {
 	std::vector<Obstacle> res;
 	if (coastline.size() == 1) {
-		return { Obstacle(Vector(coastline[0].x(), coastline[0].y()), Vector(0, 0), obsts_rad, ModelType::static_obst, start_id) };
+		return { Obstacle(Vector(coastline[0].x(), coastline[0].y(), coastline[0].z()), Vector(0, 0, 0), obsts_rad, ModelType::static_obst, start_id) };
 	}
 	
 	unsigned int cur_id = start_id;
 	for (int i = 1; i < coastline.size(); ++i) {
 		for (const auto& pos : get_line_obsts(coastline[i - 1], coastline[i], obsts_rad)) {
-			res.push_back(Obstacle(pos, Vector(0, 0), obsts_rad, ModelType::static_obst, cur_id));
+			res.push_back(Obstacle(pos, Vector(0, 0, 0), obsts_rad, ModelType::static_obst, cur_id));
 			cur_id++;
 		}
 	}

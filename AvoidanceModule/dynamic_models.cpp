@@ -10,39 +10,25 @@ std::vector<Vector> CasualDynamicModel::all_possible_velocities() const
 	}
 	std::vector<Vector> possible_velocities;
 
-    double alfa = get_course_angle();
-    // possible velocities sector : alfa + -20 degrees
-    double sector = possible_turns_sector;
-    int num_vel = 18;
-    double angle_step = sector / (num_vel - 1);
-    double left_angle = alfa - possible_turns_sector / 2;
 
-    std::vector<double> speed_coef = {1, 0.75, 0.5, 0.25};
+    // possible velocities sector 
+    double max_turn_angle = possible_turns_sector / 2;
+    int num_vel_slops = 6;
+    int num_vel_circle = 61;
+    double angle_step_slope = max_turn_angle / (num_vel_slops - 1);
+    double angle_step_circle = 360.0 / (num_vel_circle - 1);
 
-    for (auto c : speed_coef) {
-        for (const auto& el : get_sector_vecs(left_angle, left_angle + sector, len_vec*c, angle_step)) {
-            possible_velocities.push_back(el);
-        }
-    } 
-    return possible_velocities;
-}
+    Vector axis = prev_nonzero_vel();
 
-double CasualDynamicModel::get_course_angle() const
-{
-    Vector vel = ship.vel();
-    double alfa;
-    if (vel.x() == 0 and vel.y() == 0) {
-        // default vec
-        vel = prev_nonzero_vel();
-        if (vel.x() == 0 and vel.y() == 0) {
-            //  throw std::runtime - exist only if construct ship with vel=(0, 0) which is forbidden
-            //  no adequate soluituion 
-            return 0;
-        }
-        alfa = deg_clockwise_angle(_Ox_axis, vel);
-    }
-    else {
-        alfa = deg_clockwise_angle(_Ox_axis, vel);
-    }
-    return alfa;
+    return get_sector_vecs(axis, angle_step_slope, angle_step_circle, max_turn_angle);
+
+
+    //std::vector<double> speed_coef = {1, 0.75, 0.5, 0.25};
+
+    //for (auto c : speed_coef) {
+    //    for (const auto& el : get_sector_vecs(left_angle, left_angle + sector, len_vec*c, angle_step)) {
+    //        possible_velocities.push_back(el);
+    //    }
+    //} 
+    //return possible_velocities;
 }

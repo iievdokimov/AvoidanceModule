@@ -83,11 +83,11 @@ std::pair<std::vector<ModelState>, FinishLog> TrajectoryBuilder::get_full_trajec
 
 void TrajectoryBuilder::next_step(){
 	if (_is_finished) return;
-
 	//std::cout << "step: " << _cur_step << "max_steps: " << hyperparams.max_steps << std::endl;
 	
-	
 	Vector best_velocity = choose_velocity();
+	//Vector best_velocity = ship.vel();
+
 	Vector prev_ship_pos = ship.pos();
 	ship.set_vel(best_velocity);
 	// estimate cr before moving
@@ -256,7 +256,7 @@ Vector TrajectoryBuilder::choose_velocity() //cosnt
 		}
 		else {
 			_is_finished = true;
-			return Vector(0, 0);
+			return Vector(0, 0, 0);
 		}
 	}
 
@@ -271,7 +271,7 @@ Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector>& veloc
 	
 	//worst case is estimation = 1
 	double best_estimation = 1.1;
-	Vector best_vel(0, 0);
+	Vector best_vel(0, 0, 0);
 
 
 	// updateing once here
@@ -286,13 +286,16 @@ Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector>& veloc
 			continue;
 		}
 
-		obst.update_collision_cone(ship, hyperparams.safe_dist);
+		//obst.update_collision_cone(ship, hyperparams.safe_dist);
 	}
 
 	_step_vel_ratings.clear();
 
+	//int idx = 1;
 	for (const auto& vel : velocities) {
 		double vel_est = velocity_estimation(vel);
+		//double vel_est = 1.0 / idx;
+		//idx++;
 		_step_vel_ratings.push_back({ vel, vel_est });
 		if (vel_est < best_estimation) {
 			best_estimation = vel_est;
@@ -305,9 +308,7 @@ Vector TrajectoryBuilder::optimization_velocity(const std::vector<Vector>& veloc
 
 double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 {
-	double inside_vo_rating = 0;
-
-	
+	double inside_vo_rating = 1;
 	double collision_risk_rating = 0;
 	double target_heading_rating = rating_target_heading(vel);
 	for (auto& obst : obst_list) {
@@ -317,16 +318,16 @@ double TrajectoryBuilder::velocity_estimation(Vector vel) //const
 		collision_risk_rating = std::max(collision_risk_rating, collision_risk(ship, vel, obst, hyperparams));
 
 		// counting inside vo rating
-		if (inside_vo_rating == 0) {
+		/*if (inside_vo_rating == 0) {
 			if (obst.type() == ModelType::static_obst) {
 				if (not hyperparams.ignore_VO_static_obsts) {
-					inside_vo_rating = obst.velocity_inside_vo(ship.pos(), vel);
+					//inside_vo_rating = obst.velocity_inside_vo(ship.pos(), vel);
 				}
 			}
 			else {
-				inside_vo_rating = obst.velocity_inside_vo(ship.pos(), vel);
+				//inside_vo_rating = obst.velocity_inside_vo(ship.pos(), vel);
 			}
-		}
+		}*/
 	}
 
 	Vector cur_vel = ship.vel();

@@ -77,23 +77,23 @@ public:
 	Obstacle(Vector pos, Vector vel, double rad, ModelType type, int id) :
 		ModelObject(pos, vel, rad, type, id)// , _collision_cone{ std::vector<Vector>(3) } {}
 	{
-		_collision_cone = { Vector(0, 0), Vector(0, 0), Vector(0, 0) };
+		//_collision_cone = { Vector(0, 0), Vector(0, 0), Vector(0, 0) };
 	}
 
-	double velocity_inside_vo(Vector ship_pos, Vector vel);
-	void update_collision_cone(const Ship& ship, double safe_dist);
+	//double velocity_inside_vo(Vector ship_pos, Vector vel);
+	//void update_collision_cone(const Ship& ship, double safe_dist);
 
-	const auto& collision_cone() const { return _collision_cone; };
+	//const auto& collision_cone() const { return _collision_cone; };
 
 	// const functions for ui-usage
-	std::vector<Vector> get_updated_collision_cone(const Ship& ship, double safe_dist) const;
+	//std::vector<Vector> get_updated_collision_cone(const Ship& ship, double safe_dist) const;
 private:
-	std::vector<Vector> _collision_cone;
+	//std::vector<Vector> _collision_cone;
 
-	std::pair<bool, std::vector<Vector>> build_vo(const Ship& ship, double safe_dist) const;
-	bool vo_intersection(Vector point);
-	void sort_collision_cone_edges();
-	void set_collision_cone(std::vector<Vector> vo_edges, Vector ship_pos);
+	//std::pair<bool, std::vector<Vector>> build_vo(const Ship& ship, double safe_dist) const;
+	//bool vo_intersection(Vector point);
+	//void sort_collision_cone_edges();
+	//void set_collision_cone(std::vector<Vector> vo_edges, Vector ship_pos);
 };
 
 

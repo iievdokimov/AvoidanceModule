@@ -48,7 +48,7 @@ std::vector<ModelState> fake_trajectory(Vector ship_pos, Vector final_target, in
 	for (int i = 1; i <= points_num; ++i) {
 		double k = (double)i / points_num;
 		Vector cur = ship_pos.add(to_target.mul(k));
-		res.push_back({ cur, {0, 0} });
+		res.push_back({ cur, {0, 0, 0} });
 	}
 	return res;
 }

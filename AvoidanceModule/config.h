@@ -13,7 +13,7 @@ public:
 
 //private:
     //steps limit of building route(unsigned int)
-    unsigned int max_steps = 200;
+    unsigned int max_steps = 1000;
     // ship radius(half - length), [meters](unsigned double)
     double ship_radius = 5;
 
@@ -31,7 +31,7 @@ public:
     // maximum possible speed [m / s](unsigned double)
     double max_speed = 10;
     // maximum possible heading angle change [degrees](unsigned double)
-    double max_turn_angle = 30;
+    double max_turn_angle = 80;
     // (?) maximum possible speed change [m / s] (unsigned double)
     double max_speed_change = 15;
     // fixed time value that passes each step[seconds(? )](unsigned int)

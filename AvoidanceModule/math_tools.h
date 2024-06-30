@@ -7,11 +7,14 @@
 #include <string>
 #include <chrono>
 
+#include <glm/glm.hpp>
+#include "iostream"
 
 class Vector {
 public:
-	Vector() :_x{ 0 }, _y{ 0 } {}
-	Vector(double x, double y) :_x{ x }, _y{ y } {}
+	Vector() :_x{ 0 }, _y{ 0 }, _z{ 0 } {}
+	Vector(double x, double y, double z) :_x{ x }, _y{ y }, _z{ z } {}
+	//Vector(double x, double y, double z = 0) :_x{ x }, _y{ y }, _z{ z } {}
 
 	
 	double magnitude() const;
@@ -19,15 +22,17 @@ public:
 	Vector add(const Vector& arg) const;
 	Vector sub(const Vector& arg) const;
 	Vector mul(double k) const;
+	Vector normed() const;
 	
 	double x() const { return _x; };
 	double y() const { return _y; };
+	double z() const { return _z; };
 
 	double dot(const Vector& arg) const;
 
 	std::string str() const;
 private:
-	double _x, _y;
+	double _x, _y, _z;
 };
 
 
@@ -47,9 +52,11 @@ double rad_clockwise_angle(Vector v1, Vector v2);
 
 double deg_clockwise_angle(Vector v1, Vector v2);
 
-Vector rotate_vector(Vector vec, double angle);
+//Vector rotate_vector(Vector v, Vector k, double theta);
 
-std::vector<Vector> get_sector_vecs(double start_angle, double end_angle, double len_vec, double step_angle);
+glm::dvec3 rotate_vector_glm(const glm::dvec3& v, const glm::dvec3& k, double theta);
+
+std::vector<Vector> get_sector_vecs(Vector axis, double angle_step_slope, double angle_step_circle, double max_turn_angle);
 
 bool in_sector(Vector point_vec, Vector vec1, Vector vec2);
 
