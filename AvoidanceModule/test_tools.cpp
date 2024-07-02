@@ -179,8 +179,8 @@ Test::Test(double data_radius)
 void Test::set_constraints() 
 {
 	coast_obst_rad = ship().rad();
-	num_dynamic_obsts = 300;
-	num_static_round_obsts = 0;
+	num_dynamic_obsts = 450;
+	num_static_round_obsts = 30;
 	num_static_curve_obsts = 0;
 	num_static_obsts = num_static_round_obsts + num_static_curve_obsts;
 
@@ -215,6 +215,8 @@ void Test::target_ship_config()
 	double dist_to_target = data_radius + hyperparams.target_reached_rad / 2.0;
 	//_target = delta_pos.add(rotate_vector(Vector(dist_to_target, 0, 0), taget_angle));
 	_target = delta_pos.add({ -dist_to_target, 0, 0 });
+	//_target = delta_pos.add({ -dist_to_target, +dist_to_target, -dist_to_target });
+	//_target = { 800, 0, 800 };
 
 	//std::cout << "TARGET: " << _target.str() << std::endl;
 

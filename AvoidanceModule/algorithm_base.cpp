@@ -217,7 +217,7 @@ void TrajectoryBuilder::update_follow_target()
 			for (int i = start_i; i < follow_targets_list.size(); ++i) {
 				Vector dtraj = follow_targets_list[i].sub(follow_targets_list[i - 1]);
 				Vector dist_vec = ship.pos().sub(follow_targets_list[i]);
-				double lcl_dist_traj_angle = deg_unsigned_angle(dtraj, dist_vec);
+				double lcl_dist_traj_angle = deg_vec_angle(dtraj, dist_vec);
 				if (lcl_dist_traj_angle > hyperparams.max_angle_to_intermediate_target) {
 					target_idx_angle = i;
 					break;
@@ -366,11 +366,27 @@ double TrajectoryBuilder::rating_target_heading(Vector vel) const
 	}
 
 	Vector vec_to_target = target.sub(ship.pos());
-	double target_angle = deg_unsigned_angle(vec_to_target, vel);
-	if (target_angle <= 30)
+	//double target_angle = deg_unsigned_angle(vec_to_target, vel);
+	double target_angle = deg_vec_angle(vec_to_target, vel);
+
+	//double target_angle_XY = deg_unsigned_angle(vec_to_target, vel);
+	//Vector yz_t(vec_to_target.y(), vec_to_target.z(), 0), yz_v(vel.y(), vel.z(), 0);
+	//double target_angle_YZ = deg_unsigned_angle(yz_t, yz_v);
+	//Vector xz_t(vec_to_target.x(), vec_to_target.z(), 0), xz_v(vel.x(), vel.z(), 0);
+	//double target_angle_XZ = deg_unsigned_angle(xz_t, xz_v);
+	//return target_angle_XY / 180.0 * 0.33 + target_angle_YZ / 180.0 * 0.33 + target_angle_XZ / 180.0 * 0.33;
+	
+	return target_angle / 180.0;
+
+	/*
+	if (target_angle <= 30) {
 		return target_angle * target_angle / 900.0 / 6.0;
-	else
-		return (double)1.0 / 6.0 + (target_angle - 30.0) / 180.0;
+	}
+	else {
+		double adjustment = (target_angle - 30.0) / 180.0;
+		return 1.0 / 6.0 + adjustment;
+	}
+	*/
 
 }
 

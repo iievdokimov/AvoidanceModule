@@ -29,6 +29,7 @@ public:
 	double z() const { return _z; };
 
 	double dot(const Vector& arg) const;
+	Vector cross(const Vector& other) const;
 
 	std::string str() const;
 private:
@@ -42,15 +43,19 @@ double radians(double deg_angle);
 
 double degrees(double rad_angle);
 
-double deg_signed_angle(Vector v1, Vector v2);
+//double deg_signed_angle(Vector v1, Vector v2);
 
-double rad_signed_angle(Vector v1, Vector v2);
+//double rad_signed_angle(Vector v1, Vector v2);
 
-double deg_unsigned_angle(Vector v1, Vector v2);
+//double deg_unsigned_angle(Vector v1, Vector v2);
 
-double rad_clockwise_angle(Vector v1, Vector v2);
+//double rad_clockwise_angle(Vector v1, Vector v2);
 
-double deg_clockwise_angle(Vector v1, Vector v2);
+//double deg_clockwise_angle(Vector v1, Vector v2);
+
+double deg_vec_angle(Vector v1, Vector v2);
+
+double rad_vec_angle(Vector v1, Vector v2);
 
 //Vector rotate_vector(Vector v, Vector k, double theta);
 

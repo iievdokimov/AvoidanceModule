@@ -17,7 +17,7 @@ double collision_risk(const Ship& ship, Vector velocity, const Obstacle& obst, c
     Vector pos_moved_ship = ship.pos().add(velocity);
     Vector pos_moved_obst = obst.pos().add(obst.vel());
     double distance = std::max(0.0, (pos_moved_obst.sub(pos_moved_ship)).magnitude() - obst.rad() - ship.rad());
-    double relative_position_angle = deg_clockwise_angle(velocity, vec_to_obst);
+    double relative_position_angle = deg_vec_angle(velocity, vec_to_obst);
     double obst_speed = obst.vel().magnitude();
     double speed_ratio = 0;
     if (ship.vel().magnitude() != 0)

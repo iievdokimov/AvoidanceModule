@@ -13,7 +13,7 @@ Vector Vector::add(const Vector& arg) const
 
 Vector Vector::sub(const Vector& arg) const
 {
-	return Vector(_x - arg._x, _y - arg._y, arg._z - _z);
+	return Vector(_x - arg._x, _y - arg._y, _z - arg._z);
 }
 
 Vector Vector::mul(double k) const
@@ -30,6 +30,15 @@ Vector Vector::normed() const
 double Vector::dot(const Vector& arg) const
 {
 	return _x * arg._x + _y * arg._y + _z * arg._z;
+}
+
+Vector Vector::cross(const Vector& other) const
+{
+	return Vector(
+		_y * other._z - _z * other._y,
+		_z * other._x - _x * other._z,
+		_x * other._y - _y * other._x
+	);
 }
 
 std::string Vector::str() const
@@ -51,7 +60,7 @@ double degrees(double rad_angle)
 {
 	return rad_angle * ((double)180.0 / acos(-1));
 }
-
+/*
 double deg_signed_angle(Vector v1, Vector v2)
 {
 	return rad_signed_angle(v1, v2) * ((double)180.0 / acos(-1));
@@ -80,6 +89,17 @@ double deg_clockwise_angle(Vector v1, Vector v2)
 	return degrees(rad_clockwise_angle(v1, v2));
 }
 
+*/
+
+
+double deg_vec_angle(Vector v1, Vector v2) {
+	return degrees(rad_vec_angle(v1, v2));
+}
+
+double rad_vec_angle(Vector v1, Vector v2) {
+	return acos(v1.dot(v2) / v1.magnitude() / v2.magnitude());
+}
+
 
 glm::dvec3 rotate_vector_glm(const glm::dvec3& v, const glm::dvec3& k, double theta)
 {
@@ -92,6 +112,17 @@ glm::dvec3 rotate_vector_glm(const glm::dvec3& v, const glm::dvec3& k, double th
 	return rotated;
 }
 
+glm::vec3 get_non_collinear_vector(const glm::vec3& v) {
+	glm::vec3 new_vector;
+	if (v.x != 0.0f) {
+		new_vector = glm::vec3(0.0f, 1.0f, 0.0f);
+	}
+	else {
+		new_vector = glm::vec3(1.0f, 0.0f, 0.0f);
+	}
+	return new_vector;
+}
+
 std::vector<Vector> get_sector_vecs(Vector axis, double angle_step_slope, double angle_step_circle, double max_turn_angle)
 {
 	std::vector<Vector> res;
@@ -102,7 +133,7 @@ std::vector<Vector> get_sector_vecs(Vector axis, double angle_step_slope, double
 	//std::cout << "Input axis : " << axis.str() << std::endl;
 
 	glm::vec3 v_axis = { axis.x(), axis.y(), axis.z()};
-	glm::vec3 any = v_axis + glm::vec3(1, 1, 1);
+	glm::vec3 any = get_non_collinear_vector(v_axis);
 	glm::vec3 perpendicular = glm::cross(v_axis, any);
 	perpendicular = glm::normalize(perpendicular);
 
@@ -140,6 +171,7 @@ std::vector<Vector> get_sector_vecs(Vector axis, double angle_step_slope, double
 	return res;
 }
 
+/*
 bool in_sector(Vector p_c, Vector p_a, Vector p_b)
 {
 	// p_c = point_vec, p_a == vec1, p_b = vec2
@@ -160,6 +192,7 @@ bool in_sector(Vector p_c, Vector p_a, Vector p_b)
 	}
 	return false;
 }
+*/
 
 Vector get_directional_vec(Vector pos, Vector target_pos)
 {	
